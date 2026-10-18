@@ -1,0 +1,102 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import SignalHero from '../hero/SignalHero.astro';
+import SectionHeading from '../SectionHeading.astro';
+import ProjectCard from '../ProjectCard.astro';
+import TalkCard from '../TalkCard.astro';
+import PostList from '../PostList.astro';
+import { SITE } from '../../config/site';
+import { ROUTES, altRoute, type Locale } from '../../i18n/routes';
+import { useT } from '../../i18n/utils';
+import { getPosts } from '../../lib/blog';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useT(locale);
+
+const featured = (await getCollection('projects', (p) => p.data.featured)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+const talks = (await getCollection('talks')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+const posts = (await getPosts(locale)).slice(0, 1);
+
+const WHO = {
+  es: 'Ingeniero de sistemas (EAFIT) con máster en ciberseguridad y privacidad (UOC). Antes de la nube, ocho años creando y dirigiendo Apolo, el centro de computación científica de EAFIT.',
+  en: 'Computer scientist (EAFIT) with an MSc in cybersecurity and privacy (UOC). Before the cloud, eight years founding and running Apolo, EAFIT’s scientific computing center.',
+};
+const WHO_LINK = { es: 'Más sobre mí', en: 'More about me' };
+---
+
+<Base
+  locale={locale}
+  title={SITE.title[locale]}
+  description={SITE.description[locale]}
+  altPath={altRoute('home', locale)}
+>
+  <slot name="head" slot="head" />
+  <SignalHero locale={locale} />
+
+  <section class="wrap block">
+    <SectionHeading kicker={t('home.kicker')} title={t('home.projects')} />
+    <div class="grid">
+      {featured.map((project) => <ProjectCard project={project} locale={locale} />)}
+    </div>
+    <p class="more reveal">
+      <a href={ROUTES.projects[locale]}>{t('home.allProjects')} →</a>
+    </p>
+  </section>
+
+  <section class="wrap block">
+    <SectionHeading kicker={t('home.talksKicker')} title={t('home.talks')} />
+    <div>
+      {talks.slice(0, 3).map((talk) => <TalkCard talk={talk} locale={locale} />)}
+    </div>
+    <p class="more reveal">
+      <a href={ROUTES.talks[locale]}>{t('home.allTalks')} →</a>
+    </p>
+  </section>
+
+  <section class="wrap block">
+    <SectionHeading kicker={t('home.blogKicker')} title="Blog" />
+    <PostList posts={posts} locale={locale} />
+  </section>
+
+  <section class="wrap block who reveal">
+    <p class="measure">{WHO[locale]}</p>
+    <p><a class="link-underline" href={ROUTES.about[locale]}>{WHO_LINK[locale]} →</a></p>
+  </section>
+</Base>
+
+<style>
+  .block {
+    padding-block: var(--space-6) 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-4);
+  }
+  .more {
+    margin-top: var(--space-4);
+  }
+  .more a {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  .who p:first-child {
+    font-family: var(--serif);
+    font-size: var(--text-lg);
+    line-height: 1.5;
+    color: var(--fg);
+  }
+</style>

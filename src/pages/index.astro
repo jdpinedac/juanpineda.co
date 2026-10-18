@@ -1,19 +1,5 @@
 ---
-import Base from '../layouts/Base.astro';
-import SectionHeading from '../components/SectionHeading.astro';
-import { SITE } from '../config/site';
-
-const locale = 'es';
+import HomeView from '../components/views/HomeView.astro';
 ---
 
-<Base
-  locale={locale}
-  title={SITE.title.es}
-  description={SITE.description.es}
-  altPath="/en/"
->
-  <section class="wrap" style="padding-top: 140px;">
-    <SectionHeading kicker="placeholder" title="Home en construcción" />
-    <p class="measure">Contenido real en la fase de páginas.</p>
-  </section>
-</Base>
+<HomeView locale="es" />

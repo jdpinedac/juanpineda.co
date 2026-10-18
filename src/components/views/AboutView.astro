@@ -1,0 +1,133 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../config/site';
+import { altRoute, type Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const COPY = {
+  title: { es: 'Sobre mí', en: 'About' },
+  description: {
+    es: 'Quién es Juan Pineda: nube, seguridad, HPC, radioafición.',
+    en: 'Who Juan Pineda is: cloud, security, HPC, ham radio.',
+  },
+};
+
+const PROSE: Record<Locale, string[]> = {
+  es: [
+    'Soy ingeniero de sistemas de EAFIT con un máster en ciberseguridad y privacidad de la UOC. Hoy soy Tech Lead en Pyxis, donde diseño arquitecturas en AWS para clientes del sector financiero y lidero la academia técnica: la apuesta de que un equipo que aprende junto construye mejor.',
+    'Antes de la nube estuvo el metal. Durante ocho años, desde su creación, coordiné Apolo, el centro de computación científica de EAFIT: clústeres de alto desempeño al servicio de investigadores que necesitaban más cómputo del que cabía en sus escritorios. Ahí aprendí que la infraestructura es un medio y que el usuario casi nunca tiene la culpa.',
+    'En los últimos años llevo la seguridad y las redes a un gremio que las necesita: la industria audiovisual. Doy charlas y talleres en conferencias de América Latina, con demos en vivo y materiales abiertos, sobre lo que pasa cuando el video corre sobre IP y nadie pensó en la red.',
+    'Fuera del trabajo soy radioaficionado: SDR, telegrafía, antenas y sistemas embebidos que fabrican excusas para soldar. Todo eso convive con un homelab que, por definición, nunca estará terminado.',
+  ],
+  en: [
+    'I am a computer scientist from EAFIT with an MSc in cybersecurity and privacy from UOC. Today I am a Tech Lead at Pyxis, where I design AWS architectures for financial sector clients and lead the technical academy: the bet that a team that learns together builds better.',
+    'Before the cloud there was metal. For eight years, from its creation, I ran Apolo, EAFIT’s scientific computing center: high performance clusters serving researchers who needed more compute than their desks could hold. There I learned that infrastructure is a means, and that the user is almost never at fault.',
+    'These past years I have been bringing security and networking to a trade that needs them: the audiovisual industry. I give talks and workshops at conferences across Latin America, with live demos and open materials, about what happens when video runs over IP and nobody thought about the network.',
+    'Off the clock I am a ham radio operator: SDR, CW, antennas and embedded systems that manufacture excuses to solder. All of it coexists with a homelab that, by definition, will never be finished.',
+  ],
+};
+
+const FACTS: Record<Locale, Array<[string, string]>> = {
+  es: [
+    ['Pyxis · Tech Lead', 'hoy'],
+    ['Academia técnica', 'hoy'],
+    ['Apolo · HPC EAFIT', '8 años'],
+    ['MSc ciberseguridad · UOC', '✓'],
+    ['Ing. de sistemas · EAFIT', '✓'],
+  ],
+  en: [
+    ['Pyxis · Tech Lead', 'now'],
+    ['Technical academy', 'now'],
+    ['Apolo · EAFIT HPC', '8 yrs'],
+    ['MSc cybersecurity · UOC', '✓'],
+    ['CS degree · EAFIT', '✓'],
+  ],
+};
+---
+
+<Base
+  locale={locale}
+  title={`${COPY.title[locale]} · ${SITE.title[locale]}`}
+  description={COPY.description[locale]}
+  altPath={altRoute('about', locale)}
+>
+  <article class="wrap layout">
+    <div class="prose">
+      <h1>{COPY.title[locale]}</h1>
+      {PROSE[locale].map((p) => <p class="reveal">{p}</p>)}
+      <p class="reach reveal">
+        <a class="link-underline" href={SITE.linkedin} rel="me noopener">LinkedIn</a>
+        <a class="link-underline" href={SITE.github} rel="me noopener">GitHub</a>
+      </p>
+    </div>
+    <aside class="facts" aria-label={locale === 'es' ? 'Ficha' : 'Fact sheet'}>
+      {
+        FACTS[locale].map(([what, when]) => (
+          <div class="row">
+            <span>{what}</span>
+            <b>{when}</b>
+          </div>
+        ))
+      }
+    </aside>
+  </article>
+</Base>
+
+<style>
+  .layout {
+    padding-top: 140px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: var(--space-6);
+    align-items: start;
+  }
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-4);
+  }
+  .prose p {
+    max-width: var(--measure);
+    margin-bottom: var(--space-4);
+  }
+  .reach {
+    display: flex;
+    gap: var(--space-4);
+  }
+  .facts {
+    border-left: 1px solid var(--line);
+    padding-left: var(--space-4);
+    position: sticky;
+    top: 120px;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: 10px;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--fg-muted);
+  }
+  .row b {
+    color: var(--fg);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  @media (max-width: 820px) {
+    .layout {
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+    .facts {
+      border-left: 0;
+      padding-left: 0;
+      position: static;
+    }
+  }
+</style>

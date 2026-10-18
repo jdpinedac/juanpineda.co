@@ -1,4 +1,5 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection } from 'astro:content';
+import { z } from 'astro/zod';
 import { glob } from 'astro/loaders';
 
 const localized = z.object({ es: z.string(), en: z.string() });
@@ -11,8 +12,8 @@ const projects = defineCollection({
       group: z.enum(['tools', 'ham-radio']),
       lang: z.string(),
       visibility: z.enum(['public', 'private']),
-      repo: z.string().url().optional(),
-      liveUrl: z.string().url().optional(),
+      repo: z.url().optional(),
+      liveUrl: z.url().optional(),
       summary: localized,
       description: localized.optional(),
       featured: z.boolean().default(false),
@@ -31,8 +32,8 @@ const talks = defineCollection({
     /** Solo para ordenar la línea de tiempo; no se muestra el día. */
     date: z.coerce.date(),
     kind: z.enum(['workshop', 'talk', 'demo']),
-    repo: z.string().url().optional(),
-    siteUrl: z.string().url().optional(),
+    repo: z.url().optional(),
+    siteUrl: z.url().optional(),
     summary: localized,
   }),
 });
