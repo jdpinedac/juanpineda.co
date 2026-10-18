@@ -19,7 +19,7 @@ Pages en `https://juanpineda.co` (con `www.juanpineda.co` como alias).
 
 ## Desarrollo
 
-Requiere Node ≥ 22.22 (hay `.nvmrc`).
+Requiere Node ≥ 24.22 (la versión exacta está en `.nvmrc`).
 
 ```sh
 npm ci
@@ -50,7 +50,10 @@ npm run preview   # sirve dist/
 - **Charla**: un YAML en `src/content/talks/`. `date` solo ordena la línea de
   tiempo; se muestra `event`.
 - **Post**: un MDX en `src/content/blog/es/` y su par en `blog/en/` con el
-  mismo `translationKey`.
+  mismo `translationKey`. Un post solo se publica cuando su traducción también
+  está publicada: los borradores (`draft: true`) van en pareja, porque la
+  aserción de parejas los ignora y un publicado con traducción en borrador
+  rompe el build.
 
 ## Despliegue
 

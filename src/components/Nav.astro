@@ -32,7 +32,9 @@ const current = Astro.url.pathname;
             <li>
               <a
                 href={it.href}
-                aria-current={current.startsWith(it.href) ? 'page' : undefined}
+                aria-current={
+                  current === it.href ? 'page' : current.startsWith(it.href) ? 'true' : undefined
+                }
               >
                 {it.label}
               </a>
