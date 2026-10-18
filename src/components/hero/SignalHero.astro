@@ -36,7 +36,7 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
   <div class="scrim" aria-hidden="true"></div>
   <div class="wrap content">
     <p class="freq" aria-hidden="true">
-      RX · 145.350 MHz <span class="dim">· Medellín, Colombia · 6.24°N 75.58°W</span>
+      <span class="nowrap">RX · 145.350 MHz</span>{' '}<span class="dim">· Medellín, Colombia · <span class="nowrap">6.24°N 75.58°W</span></span>
     </p>
     <h1>Juan Pineda</h1>
     <p class="tag">{pick(TAG, locale)}</p>
@@ -82,6 +82,17 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     display: flex;
     align-items: flex-end;
     overflow: hidden;
+    /* Pantalla de señal: el hero es oscuro en ambos temas, así que fija su
+       fondo y los tokens que usan sus descendientes. */
+    background: #0c1117;
+    /* re-resuelve el color heredado del body con los tokens de la isla */
+    color: var(--fg);
+    --fg: #d9dde3;
+    --fg-strong: #f5f6f8;
+    --fg-muted: #98a0ab;
+    --accent: #7fd8c8;
+    --accent-dim: rgba(127, 216, 200, 0.35);
+    --line: #1e2832;
   }
   .fallback {
     position: absolute;
@@ -136,6 +147,9 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
   .freq .dim {
     color: var(--fg-muted);
   }
+  .freq .nowrap {
+    white-space: nowrap;
+  }
   h1 {
     font-size: var(--text-display);
     line-height: 1.04;
@@ -161,7 +175,8 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     min-height: var(--tap);
     display: inline-flex;
     align-items: center;
-    border: 1px solid var(--line);
+    /* Visible sobre el canvas: --line se pierde contra la cascada. */
+    border: 1px solid rgba(255, 255, 255, 0.22);
     border-radius: 6px;
     color: var(--fg-strong);
   }

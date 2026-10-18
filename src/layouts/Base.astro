@@ -36,7 +36,8 @@ const isRootHome = locale === 'es' && currentPath === '/';
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author} />
     <meta name="referrer" content="no-referrer" />
-    <meta name="theme-color" content="#0c1117" />
+    <meta name="theme-color" content="#0c1117" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#f4f6f7" media="(prefers-color-scheme: light)" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     {noindex && <meta name="robots" content="noindex" />}
     {

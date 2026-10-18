@@ -67,6 +67,7 @@ const FACTS: Record<Locale, Array<[string, string]>> = {
       </p>
     </div>
     <aside class="facts" aria-label={locale === 'es' ? 'Ficha' : 'Fact sheet'}>
+      <p class="facts-label" aria-hidden="true">{locale === 'es' ? 'Bitácora' : 'Logbook'}</p>
       {
         FACTS[locale].map(([what, when]) => (
           <div class="row">
@@ -105,12 +106,20 @@ const FACTS: Record<Locale, Array<[string, string]>> = {
     position: sticky;
     top: 120px;
   }
+  .facts-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin: 0 0 var(--space-2);
+  }
   .row {
     display: flex;
     justify-content: space-between;
     gap: var(--space-3);
     padding-block: 10px;
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    border-bottom: 1px dashed var(--line);
     font-family: var(--mono);
     font-size: 13px;
     color: var(--fg-muted);

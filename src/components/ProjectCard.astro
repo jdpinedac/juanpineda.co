@@ -11,9 +11,10 @@ interface Props {
 const { project, locale } = Astro.props;
 const t = useT(locale);
 const { data } = project;
+const interactive = Boolean(data.liveUrl || data.repo);
 ---
 
-<article class="card reveal">
+<article class:list={["card", "reveal", { static: !interactive }]}>
   <p class="chip">
     {data.lang}
     {data.liveUrl && <span class="live"> · {t('projects.live')}</span>}
@@ -44,13 +45,17 @@ const { data } = project;
     border: 1px solid var(--line);
     border-radius: 10px;
     padding: var(--space-4);
-    background: rgba(255, 255, 255, 0.015);
+    background: var(--card-bg);
     transition: border-color 0.2s;
     display: flex;
     flex-direction: column;
   }
   .card:hover {
     border-color: var(--accent-dim);
+  }
+  /* Reseña sin enlaces: no insinuar clic con el hover. */
+  .card.static:hover {
+    border-color: var(--line);
   }
   .chip {
     font-family: var(--mono);
