@@ -66,7 +66,9 @@ español fue pedido explícitamente y no debe rebotar a `/en/`.
 - **Charla**: un YAML en `src/content/talks/`. `date` solo ordena la línea de
   tiempo; se muestra `event`.
 - **Post**: un MDX en `src/content/blog/es/` y su par en `blog/en/` con el
-  mismo `translationKey`. Un post solo se publica cuando su traducción también
+  mismo `translationKey`. OG propia (opcional): añadir su entrada en `PAGES`
+  de `scripts/og-images.py`, correr el script y poner la ruta en el campo
+  `ogImage` del frontmatter. Un post solo se publica cuando su traducción también
   está publicada: los borradores (`draft: true`) van en pareja, porque la
   aserción de parejas los ignora y un publicado con traducción en borrador
   rompe el build.
