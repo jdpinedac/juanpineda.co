@@ -1,2 +1,15 @@
+# build
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# logs
+npm-debug.log*
+# environment variables
+.env
+.env.production
+# superpowers scratch
 .superpowers/
+# macOS
 .DS_Store
