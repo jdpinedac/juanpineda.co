@@ -32,6 +32,7 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
         stroke-width="2"></path>
     </svg>
   </div>
+  <canvas class="signal" data-signal-canvas aria-hidden="true"></canvas>
   <div class="scrim" aria-hidden="true"></div>
   <div class="wrap content">
     <p class="freq" aria-hidden="true">
@@ -45,6 +46,33 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     </div>
   </div>
 </section>
+
+<script>
+  // Carga diferida del shader: solo cuando el hero está en viewport y el
+  // hilo principal está libre. Si algo falla, el fallback CSS queda.
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-signal-canvas]');
+  if (canvas) {
+    const start = async () => {
+      try {
+        const { mountSignalField } = await import('./signal-field');
+        mountSignalField(canvas);
+      } catch {
+        /* fallback CSS */
+      }
+    };
+    const idle = (cb: () => void) =>
+      'requestIdleCallback' in window
+        ? requestIdleCallback(cb, { timeout: 1500 })
+        : setTimeout(cb, 200);
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        idle(start);
+      }
+    });
+    io.observe(canvas);
+  }
+</script>
 
 <style>
   .hero {
@@ -70,6 +98,17 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     bottom: 26%;
     width: 100%;
     height: 160px;
+  }
+  .signal {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .signal[data-ready] {
+    opacity: 1;
   }
   .scrim {
     position: absolute;

@@ -61,6 +61,7 @@ const FACTS: Record<Locale, Array<[string, string]>> = {
       <h1>{COPY.title[locale]}</h1>
       {PROSE[locale].map((p) => <p class="reveal">{p}</p>)}
       <p class="reach reveal">
+        <a class="link-underline" href={`mailto:${SITE.email}`}>{SITE.email}</a>
         <a class="link-underline" href={SITE.linkedin} rel="me noopener">LinkedIn</a>
         <a class="link-underline" href={SITE.github} rel="me noopener">GitHub</a>
       </p>

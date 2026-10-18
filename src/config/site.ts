@@ -2,6 +2,7 @@ export const SITE = {
   url: 'https://juanpineda.co',
   author: 'Juan Pineda',
   location: 'Medellín, Colombia',
+  email: 'hola@juanpineda.co',
   linkedin: 'https://www.linkedin.com/in/jdpinedac',
   github: 'https://github.com/jdpinedac',
   title: {

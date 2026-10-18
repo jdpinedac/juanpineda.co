@@ -16,6 +16,7 @@ const rss = locale === 'es' ? '/rss.xml' : '/en/rss.xml';
   <div class="wrap row">
     <span class="place">{SITE.location}</span>
     <nav aria-label="Social">
+      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
       <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>
       <a href={SITE.github} rel="me noopener">GitHub</a>
       <a href={rss}>{t('footer.rss')}</a>
