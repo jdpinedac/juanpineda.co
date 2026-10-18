@@ -1,0 +1,69 @@
+---
+import { SITE } from '../config/site';
+import type { Locale } from '../i18n/routes';
+import { useT } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useT(locale);
+const rss = locale === 'es' ? '/rss.xml' : '/en/rss.xml';
+---
+
+<footer class="site-footer">
+  <div class="wrap row">
+    <span class="place">{SITE.location}</span>
+    <nav aria-label="Social">
+      <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>
+      <a href={SITE.github} rel="me noopener">GitHub</a>
+      <a href={rss}>{t('footer.rss')}</a>
+    </nav>
+    <span class="license">{t('footer.license')}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--line);
+    padding-block: var(--space-5);
+    margin-top: var(--space-7);
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    position: relative;
+    z-index: 1;
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+  .place {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.08em;
+  }
+  nav {
+    display: flex;
+    gap: var(--space-3);
+  }
+  nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    color: var(--fg);
+  }
+  nav a:hover {
+    color: var(--accent);
+  }
+  .license {
+    margin-left: auto;
+  }
+  @media (max-width: 560px) {
+    .license {
+      margin-left: 0;
+    }
+  }
+</style>

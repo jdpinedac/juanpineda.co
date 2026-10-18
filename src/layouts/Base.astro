@@ -1,0 +1,72 @@
+---
+import '../styles/global.css';
+import { SITE } from '../config/site';
+import type { Locale } from '../i18n/routes';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Ruta de esta misma página en el otro idioma (con slash final). */
+  altPath: string;
+  ogImage?: string;
+}
+
+const { locale, title, description, altPath, ogImage } = Astro.props;
+
+const currentPath = Astro.url.pathname;
+const esPath = locale === 'es' ? currentPath : altPath;
+const enPath = locale === 'en' ? currentPath : altPath;
+const canonical = new URL(currentPath, SITE.url).href;
+const og = new URL(ogImage ?? `/og/default-${locale}.png`, SITE.url).href;
+const isRootHome = locale === 'es' && currentPath === '/';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={SITE.author} />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="theme-color" content="#0c1117" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={new URL(esPath, SITE.url).href} />
+    <link rel="alternate" hreflang="en" href={new URL(enPath, SITE.url).href} />
+    <link rel="alternate" hreflang="x-default" href={new URL(esPath, SITE.url).href} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={SITE.title[locale]}
+      href={locale === 'es' ? '/rss.xml' : '/en/rss.xml'}
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.title[locale]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={og} />
+    <meta property="og:locale" content={locale === 'es' ? 'es_CO' : 'en_US'} />
+    <meta name="twitter:card" content="summary_large_image" />
+    {
+      isRootHome && (
+        <script is:inline>{`(function(){try{var s=localStorage.getItem("lang");if(!s&&/^en\\b/i.test(navigator.language)&&location.pathname==="/")location.replace("/en/")}catch(e){}})();`}</script>
+      )
+    }
+    <slot name="head" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{locale === 'es' ? 'Saltar al contenido' : 'Skip to content'}</a>
+    <Nav locale={locale} altPath={altPath} />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer locale={locale} />
+  </body>
+</html>

@@ -1,0 +1,60 @@
+---
+import type { Locale } from '../i18n/routes';
+import { useT } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+  /** URL de esta página en el otro idioma. */
+  altPath: string;
+}
+
+const { locale, altPath } = Astro.props;
+const t = useT(locale);
+const target: Locale = locale === 'es' ? 'en' : 'es';
+---
+
+<a
+  class="lang-toggle"
+  href={altPath}
+  hreflang={target}
+  lang={target}
+  aria-label={t('lang.aria')}
+  data-lang-toggle={target}
+>
+  {t('lang.label')}
+</a>
+
+<script>
+  // Guarda la elección de idioma; mismo key ('lang') que la página 2025.
+  document.querySelectorAll<HTMLAnchorElement>('[data-lang-toggle]').forEach((a) => {
+    a.addEventListener('click', () => {
+      try {
+        localStorage.setItem('lang', a.dataset.langToggle ?? 'es');
+      } catch {
+        /* sin almacenamiento, sin problema */
+      }
+    });
+  });
+</script>
+
+<style>
+  .lang-toggle {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--fg-muted);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    min-width: var(--tap);
+    padding-inline: 12px;
+  }
+  .lang-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+</style>

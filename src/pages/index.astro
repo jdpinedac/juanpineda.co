@@ -1,16 +1,19 @@
 ---
+import Base from '../layouts/Base.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import { SITE } from '../config/site';
+
+const locale = 'es';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base
+  locale={locale}
+  title={SITE.title.es}
+  description={SITE.description.es}
+  altPath="/en/"
+>
+  <section class="wrap" style="padding-top: 140px;">
+    <SectionHeading kicker="placeholder" title="Home en construcción" />
+    <p class="measure">Contenido real en la fase de páginas.</p>
+  </section>
+</Base>
