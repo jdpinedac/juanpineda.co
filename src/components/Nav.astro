@@ -22,7 +22,9 @@ const current = Astro.url.pathname;
 
 <header class="site-nav">
   <div class="wrap bar">
-    <a class="wordmark" href={ROUTES.home[locale]}>Juan Pineda</a>
+    <a class="wordmark" href={ROUTES.home[locale]} aria-label="JP · Juan Pineda">
+      <span class="full">Juan Pineda</span><span class="short">JP</span>
+    </a>
     <nav aria-label={t('nav.aria')}>
       <ul>
         {
@@ -89,15 +91,26 @@ const current = Astro.url.pathname;
   nav a[aria-current='page'] {
     color: var(--accent);
   }
+  .wordmark .short {
+    display: none;
+  }
   @media (max-width: 640px) {
     .bar {
       gap: var(--space-2);
     }
     .wordmark {
-      font-size: 17px;
+      font-size: 18px;
+      white-space: nowrap;
+    }
+    .wordmark .full {
+      display: none;
+    }
+    .wordmark .short {
+      display: inline;
     }
     nav a {
       padding-inline: 7px;
+      font-size: 13px;
     }
   }
 </style>
