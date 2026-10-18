@@ -107,11 +107,13 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
   document.addEventListener('visibilitychange', onVisibility);
   motionQuery.addEventListener('change', update);
 
-  const onLost = (e: Event) => {
-    e.preventDefault();
+  const onLost = () => {
+    // Pérdida de contexto = terminal: el fallback CSS vuelve y nada
+    // (IO, visibilitychange, motion) puede reencender el loop muerto.
+    disposed = true;
     running = false;
     cancelAnimationFrame(raf);
-    delete canvas.dataset.ready; // el fallback CSS vuelve a verse
+    delete canvas.dataset.ready;
   };
   canvas.addEventListener('webglcontextlost', onLost);
 

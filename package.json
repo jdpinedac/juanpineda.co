@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "astro dev",
     "check": "astro check",
-    "build": "astro check && astro build",
+    "build": "astro check && astro build && node scripts/check-csp-hash.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
