@@ -1,0 +1,298 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../config/site';
+import { pick } from '../../i18n/utils';
+import type { Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const talks = (await getCollection('talks')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const KIND = {
+  workshop: { es: 'Taller', en: 'Workshop' },
+  talk: { es: 'Charla', en: 'Talk' },
+  demo: { es: 'Demo', en: 'Demo' },
+} as const;
+
+const COPY = {
+  title: { es: 'Kit para organizadores', en: 'Speaker kit' },
+  description: {
+    es: 'Bio, charlas disponibles y material de prensa de Juan Pineda, listos para copiar.',
+    en: 'Juan Pineda’s bio, available talks and press material, ready to copy.',
+  },
+  lede: {
+    es: 'Todo lo que un organizador necesita para anunciar una charla: bios listas para copiar, abstracts y el monograma oficial. Si falta algo, escríbeme.',
+    en: 'Everything an organizer needs to announce a talk: copy-ready bios, abstracts and the official monogram. If anything is missing, write me.',
+  },
+  facts: { es: 'Datos rápidos', en: 'Quick facts' },
+  bioShort: { es: 'Bio corta (~50 palabras)', en: 'Short bio (~50 words)' },
+  bioLong: { es: 'Bio larga', en: 'Long bio' },
+  intro: { es: 'Para presentarlo en escena', en: 'Stage introduction' },
+  talksAvail: { es: 'Charlas disponibles', en: 'Available talks' },
+  assets: { es: 'Material gráfico', en: 'Graphic assets' },
+  assetsNote: {
+    es: 'La identidad del ponente es tipográfica: no hay foto. Para piezas gráficas, usar el monograma sobre fondo oscuro, sin deformar.',
+    en: 'The speaker’s identity is typographic: there is no photo. For graphics, use the monogram on a dark background, undistorted.',
+  },
+  materials: { es: 'Materiales', en: 'Materials' },
+  site: { es: 'Sitio', en: 'Site' },
+};
+
+const FACTS: Record<Locale, Array<[string, string]>> = {
+  es: [
+    ['Nombre público', 'Juan Pineda'],
+    ['Rol', 'Tech Lead en nube y DevSecOps'],
+    ['Base', 'Medellín, Colombia'],
+    ['Idiomas', 'Español e inglés'],
+    ['Contacto', SITE.email],
+    ['Web', 'juanpineda.co'],
+  ],
+  en: [
+    ['Public name', 'Juan Pineda'],
+    ['Role', 'Cloud and DevSecOps Tech Lead'],
+    ['Based in', 'Medellín, Colombia'],
+    ['Languages', 'Spanish and English'],
+    ['Contact', SITE.email],
+    ['Web', 'juanpineda.co'],
+  ],
+};
+
+const BIO_SHORT = {
+  es: 'Juan Pineda es Tech Lead en nube y DevSecOps: ingeniero de sistemas (EAFIT) con máster en ciberseguridad y privacidad (UOC). Lleva la seguridad y las redes a la industria audiovisual con charlas y talleres en conferencias de América Latina, siempre con demos en vivo y materiales abiertos. Fuera del trabajo es radioaficionado.',
+  en: 'Juan Pineda is a cloud and DevSecOps Tech Lead: a computer scientist (EAFIT) with an MSc in cybersecurity and privacy (UOC). He brings security and networking to the audiovisual industry through talks and workshops at conferences across Latin America, always with live demos and open materials. Off the clock he is a ham radio operator.',
+};
+
+const BIO_LONG: Record<Locale, string[]> = {
+  es: [
+    'Juan Pineda es ingeniero de sistemas de EAFIT con un máster en ciberseguridad y privacidad de la UOC. Hoy es Tech Lead en Pyxis, donde diseña arquitecturas en AWS para clientes del sector financiero y lidera la academia técnica de la compañía.',
+    'Antes de la nube estuvo el metal: durante ocho años, desde su creación, coordinó Apolo, el centro de computación científica de EAFIT, con clústeres de alto desempeño al servicio de investigadores.',
+    'En los últimos años lleva la seguridad y las redes a un gremio que las necesita: la industria audiovisual. Da charlas y talleres en conferencias de América Latina — siempre con demos en vivo y materiales abiertos — sobre lo que pasa cuando el video corre sobre IP y nadie pensó en la red. Fuera del trabajo es radioaficionado: SDR, telegrafía y sistemas embebidos.',
+  ],
+  en: [
+    'Juan Pineda is a computer scientist from EAFIT with an MSc in cybersecurity and privacy from UOC. He is a Tech Lead at Pyxis, where he designs AWS architectures for financial sector clients and leads the company’s technical academy.',
+    'Before the cloud there was metal: for eight years, from its creation, he ran Apolo, EAFIT’s scientific computing center, with high performance clusters serving researchers.',
+    'These past years he has been bringing security and networking to a trade that needs them: the audiovisual industry. He gives talks and workshops at conferences across Latin America — always with live demos and open materials — about what happens when video runs over IP and nobody thought about the network. Off the clock he is a ham radio operator: SDR, CW and embedded systems.',
+  ],
+};
+
+const MC_INTRO = {
+  es: '«Nuestro siguiente ponente diseña arquitecturas seguras en la nube y dirigió durante ocho años un centro de computación científica. Hoy trae esa seguridad a la industria AV, con demos en vivo. Desde Medellín: Juan Pineda.»',
+  en: '“Our next speaker designs secure cloud architectures and ran a scientific computing center for eight years. Today he brings that security to the AV industry, live demos included. From Medellín: Juan Pineda.”',
+};
+---
+
+<Base
+  locale={locale}
+  title={`${COPY.title[locale]} · ${SITE.title[locale]}`}
+  description={COPY.description[locale]}
+  altPath={locale === 'es' ? '/en/talks/kit/' : '/charlas/kit/'}
+>
+  <header class="wrap head">
+    <h1>{COPY.title[locale]}</h1>
+    <p class="lede measure">
+      {COPY.lede[locale]}
+      <a class="link-underline" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+    </p>
+  </header>
+
+  <section class="wrap block">
+    <p class="kicker">{COPY.facts[locale]}</p>
+    <dl class="facts">
+      {
+        FACTS[locale].map(([k, v]) => (
+          <div class="fact">
+            <dt>{k}</dt>
+            <dd>{v}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="wrap block">
+    <p class="kicker">{COPY.bioShort[locale]}</p>
+    <blockquote class="copyblock measure">{BIO_SHORT[locale]}</blockquote>
+
+    <p class="kicker">{COPY.bioLong[locale]}</p>
+    <blockquote class="copyblock measure">
+      {BIO_LONG[locale].map((p) => <p>{p}</p>)}
+    </blockquote>
+
+    <p class="kicker">{COPY.intro[locale]}</p>
+    <blockquote class="copyblock measure">{MC_INTRO[locale]}</blockquote>
+  </section>
+
+  <section class="wrap block">
+    <p class="kicker">{COPY.talksAvail[locale]}</p>
+    <div class="talks">
+      {
+        talks.map((talk) => (
+          <article class="talk">
+            <p class="meta">
+              {KIND[talk.data.kind][locale]} · {talk.data.event}
+            </p>
+            <h3>{pick(talk.data.title, locale)}</h3>
+            <p class="summary">{pick(talk.data.summary, locale)}</p>
+            <p class="links">
+              {talk.data.siteUrl && (
+                <a href={talk.data.siteUrl} rel="noopener">
+                  {COPY.site[locale]} →
+                </a>
+              )}
+              {talk.data.repo && (
+                <a href={talk.data.repo} rel="noopener">
+                  {COPY.materials[locale]} →
+                </a>
+              )}
+            </p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="wrap block">
+    <p class="kicker">{COPY.assets[locale]}</p>
+    <div class="assets">
+      <img src="/kit/jp-monograma.svg" alt="Monograma JP" width="96" height="96" />
+      <div>
+        <p class="measure">{COPY.assetsNote[locale]}</p>
+        <p class="links">
+          <a href="/kit/jp-monograma.png" download>PNG 1024×1024 →</a>
+          <a href="/kit/jp-monograma.svg" download>SVG →</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 140px;
+  }
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  .lede {
+    color: var(--fg-muted);
+    margin-top: var(--space-3);
+  }
+  .lede a {
+    margin-left: 6px;
+  }
+  .block {
+    padding-block: var(--space-5) 0;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin: var(--space-5) 0 var(--space-3);
+  }
+  .block .kicker:first-child {
+    margin-top: 0;
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-3);
+    margin: 0;
+  }
+  .fact {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card-bg);
+    padding: var(--space-3);
+  }
+  .fact dt {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin-bottom: 4px;
+  }
+  .fact dd {
+    margin: 0;
+    color: var(--fg-strong);
+  }
+  .copyblock {
+    border-left: 3px solid var(--accent);
+    background: var(--card-bg);
+    border-radius: 0 10px 10px 0;
+    padding: var(--space-3) var(--space-4);
+    margin: 0 0 var(--space-4);
+    user-select: all;
+  }
+  .copyblock p {
+    user-select: all;
+  }
+  .copyblock p:last-child {
+    margin-bottom: 0;
+  }
+  .talks {
+    display: grid;
+    gap: var(--space-3);
+  }
+  .talk {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card-bg);
+    padding: var(--space-4);
+  }
+  .talk .meta {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.08em;
+    color: var(--violet);
+    margin: 0 0 8px;
+  }
+  .talk h3 {
+    font-size: var(--text-lg);
+    margin: 0 0 8px;
+  }
+  .talk .summary {
+    color: var(--fg-muted);
+    font-size: var(--text-sm);
+    max-width: var(--measure);
+    margin: 0;
+  }
+  .links {
+    margin: var(--space-3) 0 0;
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .links a {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+  .assets {
+    display: flex;
+    gap: var(--space-4);
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .assets img {
+    border-radius: 18px;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+  }
+  .assets p {
+    color: var(--fg-muted);
+    margin-bottom: var(--space-2);
+  }
+</style>

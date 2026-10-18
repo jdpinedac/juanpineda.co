@@ -38,6 +38,15 @@ const COPY = {
   <section class="wrap block">
     {talks.map((talk) => <TalkCard talk={talk} locale={locale} />)}
   </section>
+
+  <aside class="wrap organizers">
+    <p>
+      {locale === 'es' ? '¿Organizas un evento?' : 'Organizing an event?'}
+      <a class="link-underline" href={locale === 'es' ? '/charlas/kit/' : '/en/talks/kit/'}>
+        {locale === 'es' ? 'Kit para organizadores' : 'Speaker kit'} →
+      </a>
+    </p>
+  </aside>
 </Base>
 
 <style>
@@ -53,5 +62,12 @@ const COPY = {
   }
   .block {
     padding-block: var(--space-5) 0;
+  }
+  .organizers {
+    margin-top: var(--space-5);
+    color: var(--fg-muted);
+  }
+  .organizers a {
+    margin-left: 6px;
   }
 </style>
