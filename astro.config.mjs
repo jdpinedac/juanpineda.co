@@ -12,6 +12,12 @@ export default defineConfig({
     // CSS externo para que la CSP pueda ser style-src 'self'
     inlineStylesheets: 'never',
   },
+  vite: {
+    build: {
+      // Scripts siempre externos: la CSP solo lista el hash del redirect.
+      assetsInlineLimit: 0,
+    },
+  },
   i18n: {
     locales: ['es', 'en'],
     defaultLocale: 'es',

@@ -31,6 +31,28 @@ const WHO = {
   en: 'Computer scientist (EAFIT) with an MSc in cybersecurity and privacy (UOC). Before the cloud, eight years founding and running Apolo, EAFIT’s scientific computing center.',
 };
 const WHO_LINK = { es: 'Más sobre mí', en: 'More about me' };
+
+const personLd = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Juan Pineda',
+  jobTitle: 'Tech Lead',
+  email: `mailto:${SITE.email}`,
+  url: SITE.url,
+  sameAs: [SITE.linkedin, SITE.github],
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Medellín',
+    addressCountry: 'CO',
+  },
+  knowsAbout: [
+    'Cloud architecture',
+    'DevSecOps',
+    'High performance computing',
+    'AV networks',
+    'Amateur radio',
+  ],
+});
 ---
 
 <Base
@@ -39,7 +61,10 @@ const WHO_LINK = { es: 'Más sobre mí', en: 'More about me' };
   description={SITE.description[locale]}
   altPath={altRoute('home', locale)}
 >
-  <slot name="head" slot="head" />
+  <Fragment slot="head">
+    <script type="application/ld+json" is:inline set:html={personLd} />
+    <slot name="head" />
+  </Fragment>
   <SignalHero locale={locale} />
 
   <section class="wrap block">
