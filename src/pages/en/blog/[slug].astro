@@ -15,22 +15,20 @@ export async function getStaticPaths() {
   return Promise.all(
     posts.map(async (post) => {
       const translation = await getTranslation(post);
+      // assertTranslationPairs ya garantizó la pareja; esto es el seguro.
+      if (!translation) throw new Error(`Post sin traducción: ${post.id}`);
       return {
         params: { slug: postSlug(post) },
-        props: {
-          post,
-          altPath: translation ? postPath(translation) : '/blog/',
-          hasTranslation: Boolean(translation),
-        },
+        props: { post, altPath: postPath(translation) },
       };
     }),
   );
 }
 
-const { post, altPath, hasTranslation } = Astro.props;
+const { post, altPath } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<Post post={post} locale="en" altPath={altPath} hasTranslation={hasTranslation}>
+<Post post={post} locale="en" altPath={altPath}>
   <Content />
 </Post>

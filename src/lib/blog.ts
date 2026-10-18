@@ -1,11 +1,15 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { DEFAULT_LOCALE, type Locale } from '../i18n/routes';
+import type { Locale } from '../i18n/routes';
 
 export type Post = CollectionEntry<'blog'>;
 
 /** Locale de un post a partir de su id ("es/slug" | "en/slug"). */
 export function postLocale(post: Post): Locale {
-  return (post.id.split('/')[0] as Locale) ?? DEFAULT_LOCALE;
+  const seg = post.id.split('/')[0];
+  if (seg !== 'es' && seg !== 'en') {
+    throw new Error(`Post fuera de es/ o en/: ${post.id}`);
+  }
+  return seg;
 }
 
 /** Slug del post sin el prefijo de locale. */

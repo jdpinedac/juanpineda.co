@@ -1,6 +1,6 @@
 ---
 import { SITE } from '../config/site';
-import type { Locale } from '../i18n/routes';
+import { ROUTES, type Locale } from '../i18n/routes';
 import { useT } from '../i18n/utils';
 
 interface Props {
@@ -9,7 +9,7 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useT(locale);
-const rss = locale === 'es' ? '/rss.xml' : '/en/rss.xml';
+const rss = ROUTES.rss[locale];
 ---
 
 <footer class="site-footer">

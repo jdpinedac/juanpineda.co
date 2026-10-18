@@ -8,12 +8,11 @@ import { formatDate, type Post } from '../lib/blog';
 interface Props {
   post: Post;
   locale: Locale;
-  /** Ruta del post traducido (o del índice del blog si no existiera). */
+  /** Ruta del post traducido (siempre existe: se asegura en build). */
   altPath: string;
-  hasTranslation: boolean;
 }
 
-const { post, locale, altPath, hasTranslation } = Astro.props;
+const { post, locale, altPath } = Astro.props;
 const t = useT(locale);
 ---
 
@@ -32,15 +31,11 @@ const t = useT(locale);
         </time>
       </p>
       <h1>{post.data.title}</h1>
-      {
-        hasTranslation && (
-          <p class="translation">
-            <a class="link-underline" href={altPath} hreflang={locale === 'es' ? 'en' : 'es'}>
-              {t('blog.translation')} →
-            </a>
-          </p>
-        )
-      }
+      <p class="translation">
+        <a class="link-underline" href={altPath} hreflang={locale === 'es' ? 'en' : 'es'}>
+          {t('blog.translation')} →
+        </a>
+      </p>
     </header>
     <div class="prose">
       <slot />

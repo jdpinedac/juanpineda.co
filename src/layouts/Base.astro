@@ -1,7 +1,7 @@
 ---
 import '../styles/global.css';
 import { SITE } from '../config/site';
-import type { Locale } from '../i18n/routes';
+import { ROUTES, type Locale } from '../i18n/routes';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
@@ -12,9 +12,11 @@ interface Props {
   /** Ruta de esta misma página en el otro idioma (con slash final). */
   altPath: string;
   ogImage?: string;
+  /** Para el 404: robots noindex y sin canonical/hreflang. */
+  noindex?: boolean;
 }
 
-const { locale, title, description, altPath, ogImage } = Astro.props;
+const { locale, title, description, altPath, ogImage, noindex = false } = Astro.props;
 
 const currentPath = Astro.url.pathname;
 const esPath = locale === 'es' ? currentPath : altPath;
@@ -40,15 +42,22 @@ const isRootHome = locale === 'es' && currentPath === '/';
     <meta name="referrer" content="no-referrer" />
     <meta name="theme-color" content="#0c1117" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href={canonical} />
-    <link rel="alternate" hreflang="es" href={new URL(esPath, SITE.url).href} />
-    <link rel="alternate" hreflang="en" href={new URL(enPath, SITE.url).href} />
-    <link rel="alternate" hreflang="x-default" href={new URL(esPath, SITE.url).href} />
+    {noindex && <meta name="robots" content="noindex" />}
+    {
+      !noindex && (
+        <>
+          <link rel="canonical" href={canonical} />
+          <link rel="alternate" hreflang="es" href={new URL(esPath, SITE.url).href} />
+          <link rel="alternate" hreflang="en" href={new URL(enPath, SITE.url).href} />
+          <link rel="alternate" hreflang="x-default" href={new URL(esPath, SITE.url).href} />
+        </>
+      )
+    }
     <link
       rel="alternate"
       type="application/rss+xml"
       title={SITE.title[locale]}
-      href={locale === 'es' ? '/rss.xml' : '/en/rss.xml'}
+      href={ROUTES.rss[locale]}
     />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.title[locale]} />

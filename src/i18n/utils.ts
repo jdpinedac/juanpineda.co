@@ -1,13 +1,5 @@
-import { DEFAULT_LOCALE, LOCALES, type Locale } from './routes';
+import type { Locale } from './routes';
 import { UI, type UIKey } from './ui';
-
-/** Locale a partir del pathname: /en/... es inglés, el resto español. */
-export function getLocale(pathname: string): Locale {
-  const seg = pathname.split('/')[1];
-  return (LOCALES as readonly string[]).includes(seg) && seg !== DEFAULT_LOCALE
-    ? (seg as Locale)
-    : DEFAULT_LOCALE;
-}
 
 /** Traductor de cadenas de interfaz para un locale. */
 export function useT(locale: Locale) {

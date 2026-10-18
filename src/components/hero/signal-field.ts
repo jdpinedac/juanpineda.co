@@ -75,7 +75,7 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, seconds);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
-    canvas.dataset.ready = '';
+    if (!('ready' in canvas.dataset)) canvas.dataset.ready = '';
   };
 
   const loop = (ms: number) => {
@@ -118,6 +118,7 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
   canvas.addEventListener('webglcontextlost', onLost);
 
   const onResize = () => {
+    if (disposed) return;
     if (motionQuery.matches) drawFrame(STILL_TIME);
   };
   window.addEventListener('resize', onResize);
