@@ -1,0 +1,15 @@
+title:
+  es: UDP vs SRT, en vivo
+  en: UDP vs SRT, live
+event: BICSI CALA 2026
+date: 2026-03-02
+kind: demo
+repo: https://github.com/jdpinedac/av-network-demonstration
+summary:
+  es: >-
+    Herramienta didáctica de resiliencia en transporte de video: la misma señal
+    por UDP y por SRT mientras la red se degrada, con Docker, FFmpeg y
+    MediaMTX.
+  en: >-
+    Didactic tool for video transport resilience: the same signal over UDP and
+    SRT while the network degrades, with Docker, FFmpeg and MediaMTX.

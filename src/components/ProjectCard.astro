@@ -1,0 +1,89 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import type { Locale } from '../i18n/routes';
+import { pick, useT } from '../i18n/utils';
+
+interface Props {
+  project: CollectionEntry<'projects'>;
+  locale: Locale;
+}
+
+const { project, locale } = Astro.props;
+const t = useT(locale);
+const { data } = project;
+---
+
+<article class="card reveal">
+  <p class="chip">
+    {data.lang}
+    {data.liveUrl && <span class="live"> · {t('projects.live')}</span>}
+    {data.visibility === 'private' && <span> · {t('projects.private')}</span>}
+  </p>
+  <h3>{data.name}</h3>
+  <p class="summary">{pick(data.summary, locale)}</p>
+  {
+    (data.liveUrl || data.repo) && (
+      <p class="links">
+        {data.liveUrl && (
+          <a href={data.liveUrl} rel="noopener">
+            {new URL(data.liveUrl).hostname} →
+          </a>
+        )}
+        {data.repo && (
+          <a href={data.repo} rel="noopener">
+            {t('projects.repo')} →
+          </a>
+        )}
+      </p>
+    )
+  }
+</article>
+
+<style>
+  .card {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: var(--space-4);
+    background: rgba(255, 255, 255, 0.015);
+    transition: border-color 0.2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .card:hover {
+    border-color: var(--accent-dim);
+  }
+  .chip {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--violet);
+    margin: 0 0 10px;
+  }
+  .chip .live {
+    color: var(--accent);
+  }
+  h3 {
+    font-size: var(--text-lg);
+    margin: 0 0 8px;
+  }
+  .summary {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    margin: 0;
+    flex: 1;
+  }
+  .links {
+    margin: var(--space-3) 0 0;
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .links a {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+  }
+</style>

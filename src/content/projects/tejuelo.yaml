@@ -1,0 +1,12 @@
+name: tejuelo
+group: tools
+lang: TypeScript
+visibility: private
+order: 3
+summary:
+  es: >-
+    Cataloga tu biblioteca personal y haz que tus libros roten: venta,
+    intercambio, donación o préstamo. Cofradía Codex Communis.
+  en: >-
+    Catalog your personal library and keep your books moving: sale, exchange,
+    donation or loan. Codex Communis fellowship.

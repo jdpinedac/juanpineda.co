@@ -1,0 +1,14 @@
+title:
+  es: Hackeando la Señal
+  en: Hacking the Signal
+event: AVIXA 2026
+date: 2026-06-01
+kind: talk
+repo: https://github.com/jdpinedac/network-simulator-av
+summary:
+  es: >-
+    Qué le pasa al video sobre IP cuando la red se degrada: demo en vivo con un
+    simulador Docker de latencia, jitter y pérdida usando netem y FFmpeg.
+  en: >-
+    What happens to video over IP when the network degrades: live demo with a
+    Docker simulator of latency, jitter and loss using netem and FFmpeg.
