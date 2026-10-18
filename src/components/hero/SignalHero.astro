@@ -1,0 +1,175 @@
+---
+import { ROUTES, type Locale } from '../../i18n/routes';
+import { pick } from '../../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const TAG = {
+  es: 'Tech Lead en nube y DevSecOps. Hablo en conferencias sobre seguridad y redes AV, construyo herramientas que me estorba no tener, y paso el tiempo libre entre la radioafición y un homelab que nunca termina.',
+  en: 'Cloud and DevSecOps Tech Lead. I speak at conferences about AV security and networks, build the tools I was missing, and spend my free time between ham radio and a homelab that is never finished.',
+};
+const CTA_PROJECTS = { es: 'Ver proyectos', en: 'See projects' };
+const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
+---
+
+<section class="hero">
+  <!-- Fallback siempre presente: aurora + onda estática. El canvas WebGL se superpone cuando puede. -->
+  <div class="fallback" aria-hidden="true">
+    <svg
+      class="wave"
+      viewBox="0 0 1200 160"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M0,80 C60,30 120,130 180,80 C240,30 300,130 360,80 C420,40 480,120 540,80 C600,30 660,130 720,80 C780,40 840,120 900,80 C960,30 1020,130 1080,80 C1140,50 1180,100 1200,80"
+        fill="none"
+        stroke="rgba(127,216,200,.35)"
+        stroke-width="2"></path>
+    </svg>
+  </div>
+  <canvas class="signal" data-signal-canvas aria-hidden="true"></canvas>
+  <div class="scrim" aria-hidden="true"></div>
+  <div class="wrap content">
+    <p class="freq" aria-hidden="true">
+      RX · 145.350 MHz <span class="dim">· Medellín, Colombia · 6.24°N 75.58°W</span>
+    </p>
+    <h1>Juan Pineda</h1>
+    <p class="tag">{pick(TAG, locale)}</p>
+    <div class="cta">
+      <a class="primary" href={ROUTES.projects[locale]}>{pick(CTA_PROJECTS, locale)} →</a>
+      <a href={ROUTES.talks[locale]}>{pick(CTA_TALKS, locale)}</a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // Carga diferida del shader: solo cuando el hero está en viewport y el
+  // hilo principal está libre. Si algo falla, el fallback CSS queda.
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-signal-canvas]');
+  if (canvas) {
+    const start = async () => {
+      try {
+        const { mountSignalField } = await import('./signal-field');
+        mountSignalField(canvas);
+      } catch {
+        /* fallback CSS */
+      }
+    };
+    const idle = (cb: () => void) =>
+      'requestIdleCallback' in window
+        ? requestIdleCallback(cb, { timeout: 1500 })
+        : setTimeout(cb, 200);
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) {
+        io.disconnect();
+        idle(start);
+      }
+    });
+    io.observe(canvas);
+  }
+</script>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 92vh;
+    min-height: 92svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .fallback {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(42% 55% at 18% 22%, rgba(56, 189, 172, 0.22), transparent 70%),
+      radial-gradient(45% 55% at 82% 12%, rgba(129, 110, 255, 0.18), transparent 70%),
+      radial-gradient(55% 65% at 65% 95%, rgba(230, 180, 80, 0.08), transparent 70%);
+  }
+  .wave {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 26%;
+    width: 100%;
+    height: 160px;
+  }
+  .signal {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+  }
+  .signal[data-ready] {
+    opacity: 1;
+  }
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(12, 17, 23, 0.3) 0%,
+      rgba(12, 17, 23, 0.05) 45%,
+      rgba(12, 17, 23, 0.9) 94%
+    );
+  }
+  .content {
+    position: relative;
+    width: 100%;
+    padding-block: 120px var(--space-6);
+  }
+  .freq {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 var(--space-3);
+  }
+  .freq .dim {
+    color: var(--fg-muted);
+  }
+  h1 {
+    font-size: var(--text-display);
+    line-height: 1.04;
+    letter-spacing: -0.015em;
+    max-width: 14ch;
+    margin: 0 0 var(--space-3);
+  }
+  .tag {
+    font-size: var(--text-md);
+    max-width: 52ch;
+    margin: 0 0 var(--space-5);
+  }
+  .cta {
+    display: flex;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+  }
+  .cta a {
+    font-family: var(--mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    padding: 12px 20px;
+    min-height: var(--tap);
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    color: var(--fg-strong);
+  }
+  .cta a.primary {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .cta a:hover {
+    background: rgba(127, 216, 200, 0.08);
+  }
+</style>

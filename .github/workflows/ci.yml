@@ -1,0 +1,24 @@
+# El deploy lo hace Cloudflare Pages (integración Git con este repo).
+# Este workflow solo verifica que el build pase: astro check, build y la
+# aserción de hashes CSP contra public/_headers.
+name: CI
+
+on:
+  push:
+    branches: [main, redesign/astro]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci
+      - run: npm run build

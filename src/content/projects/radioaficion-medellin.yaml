@@ -1,0 +1,15 @@
+name: radioaficion-medellin
+group: ham-radio
+lang: Python
+visibility: private
+featured: true
+order: 1
+summary:
+  es: >-
+    Las frecuencias de radioafición de Medellín y Antioquia, con fuente citada
+    fila por fila, desde un único CSV: codeplugs de CHIRP, marcadores de gqrx
+    y SDR++, comandos del ATS-Mini y hojas imprimibles.
+  en: >-
+    Medellín and Antioquia amateur radio frequencies, source-cited row by row,
+    generated from a single CSV: CHIRP codeplugs, gqrx and SDR++ bookmarks,
+    ATS-Mini serial commands and printable sheets.

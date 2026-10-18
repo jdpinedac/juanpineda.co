@@ -1,0 +1,62 @@
+---
+import Base from '../layouts/Base.astro';
+import { SITE } from '../config/site';
+---
+
+<Base
+  locale="es"
+  title={`404 · ${SITE.title.es}`}
+  description="Página no encontrada / Page not found"
+  altPath="/en/"
+  noindex
+>
+  <section class="wrap lost">
+    <p class="code" aria-hidden="true">404 · NO SIGNAL</p>
+    <h1>Señal perdida</h1>
+    <p lang="en" class="en">Signal lost</p>
+    <p class="measure">
+      La página que buscas no existe o cambió de frecuencia.
+      <span lang="en">The page you are looking for does not exist or changed frequency.</span>
+    </p>
+    <p class="back">
+      <a class="link-underline" href="/">Volver al inicio</a>
+      <a class="link-underline" lang="en" href="/en/">Back home</a>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 100px;
+  }
+  .code {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.3em;
+    color: var(--violet);
+    margin-bottom: var(--space-3);
+  }
+  h1 {
+    font-size: var(--text-display);
+    margin-bottom: 4px;
+  }
+  .en {
+    font-family: var(--serif);
+    font-size: var(--text-xl);
+    color: var(--fg-muted);
+    margin-bottom: var(--space-4);
+  }
+  .measure span {
+    display: block;
+    color: var(--fg-muted);
+  }
+  .back {
+    display: flex;
+    gap: var(--space-4);
+    margin-top: var(--space-4);
+  }
+</style>

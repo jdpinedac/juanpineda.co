@@ -1,0 +1,13 @@
+name: salvamento
+group: tools
+lang: Python
+visibility: private
+order: 2
+summary:
+  es: >-
+    Recuperación de datos de discos para Linux: determinista, reanudable y con
+    interfaz de terminal. Pensada para rescates largos que no pueden empezar
+    de cero.
+  en: >-
+    Deterministic, resumable disk data recovery for Linux with a terminal UI.
+    Built for long rescues that cannot afford to start over.

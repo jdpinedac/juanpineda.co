@@ -1,0 +1,35 @@
+---
+title: 'Nueva frecuencia: el rediseño de este sitio'
+description: 'De una tarjeta de una pantalla a un sitio completo: Astro, un shader WebGL propio y cero rastreadores.'
+pubDate: 2026-10-18
+translationKey: nueva-frecuencia
+---
+
+Durante un año este dominio fue una sola pantalla: nombre, tres párrafos y dos
+enlaces. Cumplía, pero contaba en vez de mostrar. Este rediseño es el salto de
+tarjeta a sitio: proyectos, charlas, un blog y un hero que dibuja señales de
+radio en vivo.
+
+## Las decisiones
+
+**Astro, estático, en GitHub Pages.** El sitio se compila a HTML plano. No hay
+servidor, no hay base de datos, no hay superficie que atacar más allá de los
+archivos servidos.
+
+**Un shader propio en lugar de una librería 3D.** El fondo del hero es un
+fragment shader WebGL2 de unas pocas decenas de líneas: una cascada de
+espectro, portadoras que derivan y una banda FFT, el vocabulario visual de
+cualquier radioaficionado que haya usado un SDR. Three.js habría costado más
+de 150 KB para dibujar un rectángulo.
+
+**Cero rastreadores, cero terceros.** Ninguna petición sale de este dominio:
+ni analítica, ni fuentes externas, ni CDN. Las tipografías son las del
+sistema. Lo que lees aquí no le cuenta nada a nadie.
+
+**Bilingüe de verdad.** Español en la raíz, inglés bajo `/en/`, con el par
+`hreflang` completo y un toggle que recuerda tu elección.
+
+El código del sitio está en
+[GitHub](https://github.com/jdpinedac/juanpineda.co) bajo licencia MIT.
+
+73.

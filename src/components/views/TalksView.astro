@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import TalkCard from '../TalkCard.astro';
+import { SITE } from '../../config/site';
+import { altRoute, type Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const talks = (await getCollection('talks')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+const COPY = {
+  title: { es: 'Charlas', en: 'Talks' },
+  lede: {
+    es: 'Seguridad y redes para la industria AV, en conferencias de América Latina. Todo el material es abierto: decks, kits y demos reproducibles.',
+    en: 'Security and networking for the AV industry, at conferences across Latin America. All materials are open: decks, kits and reproducible demos.',
+  },
+};
+---
+
+<Base
+  locale={locale}
+  title={`${COPY.title[locale]} · ${SITE.title[locale]}`}
+  description={COPY.lede[locale]}
+  altPath={altRoute('talks', locale)}
+>
+  <header class="wrap head">
+    <h1>{COPY.title[locale]}</h1>
+    <p class="lede measure">{COPY.lede[locale]}</p>
+  </header>
+
+  <section class="wrap block">
+    {talks.map((talk) => <TalkCard talk={talk} locale={locale} />)}
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 140px;
+  }
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  .lede {
+    color: var(--fg-muted);
+    margin-top: var(--space-3);
+  }
+  .block {
+    padding-block: var(--space-5) 0;
+  }
+</style>

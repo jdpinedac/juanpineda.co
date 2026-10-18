@@ -1,0 +1,64 @@
+---
+import type { Locale } from '../i18n/routes';
+import { formatDate, postPath, type Post } from '../lib/blog';
+
+interface Props {
+  posts: Post[];
+  locale: Locale;
+}
+
+const { posts, locale } = Astro.props;
+---
+
+<ul class="post-list">
+  {
+    posts.map((post) => (
+      <li class="reveal">
+        <a href={postPath(post)}>
+          <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
+            {formatDate(post.data.pubDate, locale)}
+          </time>
+          <h3>{post.data.title}</h3>
+          <p>{post.data.description}</p>
+        </a>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .post-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    border-top: 1px solid var(--line);
+  }
+  li:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  a {
+    display: block;
+    padding-block: var(--space-4);
+  }
+  time {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+  }
+  h3 {
+    font-size: var(--text-lg);
+    margin: 6px 0;
+  }
+  a:hover h3 {
+    color: var(--accent);
+  }
+  p {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    margin: 0;
+    max-width: var(--measure);
+  }
+</style>

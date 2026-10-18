@@ -1,0 +1,14 @@
+name: cw-trainer
+group: ham-radio
+lang: C++
+visibility: private
+featured: true
+order: 2
+summary:
+  es: >-
+    Entrenador de recepción de telegrafía (método Koch con espaciado
+    Farnsworth) en un M5StickS3 que cabe en el bolsillo, con progreso
+    registrado en Google Sheets.
+  en: >-
+    CW copy trainer (Koch method with Farnsworth spacing) on a pocket-sized
+    M5StickS3, with progress tracked in Google Sheets.

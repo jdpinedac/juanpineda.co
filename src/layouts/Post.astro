@@ -1,0 +1,100 @@
+---
+import Base from './Base.astro';
+import { SITE } from '../config/site';
+import type { Locale } from '../i18n/routes';
+import { useT } from '../i18n/utils';
+import { formatDate, type Post } from '../lib/blog';
+
+interface Props {
+  post: Post;
+  locale: Locale;
+  /** Ruta del post traducido (siempre existe: se asegura en build). */
+  altPath: string;
+}
+
+const { post, locale, altPath } = Astro.props;
+const t = useT(locale);
+---
+
+<Base
+  locale={locale}
+  title={`${post.data.title} · ${SITE.title[locale]}`}
+  description={post.data.description}
+  altPath={altPath}
+  ogImage={post.data.ogImage}
+>
+  <article class="wrap post">
+    <header>
+      <p class="meta">
+        <time datetime={post.data.pubDate.toISOString().slice(0, 10)}>
+          {t('blog.published')} {formatDate(post.data.pubDate, locale)}
+        </time>
+      </p>
+      <h1>{post.data.title}</h1>
+      <p class="translation">
+        <a class="link-underline" href={altPath} hreflang={locale === 'es' ? 'en' : 'es'}>
+          {t('blog.translation')} →
+        </a>
+      </p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .post {
+    padding-top: 140px;
+    max-width: calc(var(--measure) + 2 * var(--gutter));
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    margin-bottom: var(--space-2);
+  }
+  h1 {
+    font-size: var(--text-2xl);
+    margin-bottom: var(--space-3);
+  }
+  .translation {
+    font-size: var(--text-sm);
+    margin-bottom: 0;
+  }
+  .prose {
+    margin-top: var(--space-5);
+  }
+  .prose :global(h2) {
+    font-size: var(--text-xl);
+    margin: var(--space-5) 0 var(--space-3);
+  }
+  .prose :global(p) {
+    margin-bottom: var(--space-3);
+  }
+  .prose :global(strong) {
+    color: var(--fg-strong);
+    font-weight: 600;
+  }
+  .prose :global(code) {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+  .prose :global(pre) {
+    background: var(--surface) !important;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: var(--space-3);
+    overflow-x: auto;
+    font-size: var(--text-sm);
+  }
+  .prose :global(a) {
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+  }
+</style>

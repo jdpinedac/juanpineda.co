@@ -1,0 +1,14 @@
+title:
+  es: Ataques Wi-Fi a redes AV
+  en: Wi-Fi attacks on AV networks
+event: BICSI CALA 2026
+date: 2026-03-01
+kind: demo
+repo: https://github.com/jdpinedac/wifi-pineapple-pager-demo
+summary:
+  es: >-
+    Demos en vivo de ataques de deautenticación sobre redes AV simuladas con el
+    WiFi Pineapple Pager: evil twin y DoS a streams AV.
+  en: >-
+    Live demos of deauthentication attacks on simulated AV networks using the
+    WiFi Pineapple Pager: evil twin and AV stream DoS.

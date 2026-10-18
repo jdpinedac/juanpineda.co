@@ -1,0 +1,4 @@
+# /es/ no existe como árbol real (ES vive en la raíz). ?hl=es le dice al
+# script de la raíz que el español fue pedido explícitamente.
+/es/ /?hl=es 301
+/es /?hl=es 301

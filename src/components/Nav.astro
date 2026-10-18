@@ -1,0 +1,118 @@
+---
+import { ROUTES, type Locale } from '../i18n/routes';
+import { useT } from '../i18n/utils';
+import LangToggle from './LangToggle.astro';
+
+interface Props {
+  locale: Locale;
+  altPath: string;
+}
+
+const { locale, altPath } = Astro.props;
+const t = useT(locale);
+
+const items = [
+  { href: ROUTES.projects[locale], label: t('nav.projects') },
+  { href: ROUTES.talks[locale], label: t('nav.talks') },
+  { href: ROUTES.blog[locale], label: t('nav.blog') },
+  { href: ROUTES.about[locale], label: t('nav.about') },
+];
+const current = Astro.url.pathname;
+---
+
+<header class="site-nav">
+  <div class="wrap bar">
+    <a class="wordmark" href={ROUTES.home[locale]} aria-label="JP · Juan Pineda">
+      <span class="full">Juan Pineda</span><span class="short">JP</span>
+    </a>
+    <nav aria-label={t('nav.aria')}>
+      <ul>
+        {
+          items.map((it) => (
+            <li>
+              <a
+                href={it.href}
+                aria-current={
+                  current === it.href ? 'page' : current.startsWith(it.href) ? 'true' : undefined
+                }
+              >
+                {it.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+    <LangToggle locale={locale} altPath={altPath} />
+  </div>
+</header>
+
+<style>
+  .site-nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: rgba(12, 17, 23, 0.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-height: 64px;
+  }
+  .wordmark {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--fg-strong);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+  }
+  nav ul {
+    display: flex;
+    gap: var(--space-2);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    flex-wrap: wrap;
+  }
+  nav a {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--tap);
+    padding-inline: 10px;
+  }
+  nav a:hover,
+  nav a[aria-current='page'] {
+    color: var(--accent);
+  }
+  .wordmark .short {
+    display: none;
+  }
+  @media (max-width: 640px) {
+    .bar {
+      gap: var(--space-2);
+    }
+    .wordmark {
+      font-size: 18px;
+      white-space: nowrap;
+    }
+    .wordmark .full {
+      display: none;
+    }
+    .wordmark .short {
+      display: inline;
+    }
+    nav a {
+      padding-inline: 7px;
+      font-size: 13px;
+    }
+  }
+</style>

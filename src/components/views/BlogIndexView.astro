@@ -1,0 +1,60 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../PostList.astro';
+import { SITE } from '../../config/site';
+import { altRoute, ROUTES, type Locale } from '../../i18n/routes';
+import { getPosts } from '../../lib/blog';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const posts = await getPosts(locale);
+
+const COPY = {
+  lede: {
+    es: 'Notas sobre nube, seguridad, radio y las demás frecuencias de este sitio.',
+    en: 'Notes on cloud, security, radio and the other frequencies of this site.',
+  },
+  rss: { es: 'Suscríbete por RSS', en: 'Subscribe via RSS' },
+};
+const rss = ROUTES.rss[locale];
+---
+
+<Base
+  locale={locale}
+  title={`Blog · ${SITE.title[locale]}`}
+  description={COPY.lede[locale]}
+  altPath={altRoute('blog', locale)}
+>
+  <header class="wrap head">
+    <h1>Blog</h1>
+    <p class="lede measure">
+      {COPY.lede[locale]}
+      <a class="link-underline" href={rss}>{COPY.rss[locale]}</a>
+    </p>
+  </header>
+  <section class="wrap block">
+    <PostList posts={posts} locale={locale} />
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 140px;
+  }
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  .lede {
+    color: var(--fg-muted);
+    margin-top: var(--space-3);
+  }
+  .lede a {
+    margin-left: 6px;
+  }
+  .block {
+    padding-block: var(--space-5) 0;
+  }
+</style>

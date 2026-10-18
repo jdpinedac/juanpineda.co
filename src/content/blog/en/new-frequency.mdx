@@ -1,0 +1,33 @@
+---
+title: 'New frequency: this site, redesigned'
+description: 'From a one-screen card to a full site: Astro, a hand-rolled WebGL shader and zero trackers.'
+pubDate: 2026-10-18
+translationKey: nueva-frecuencia
+---
+
+For a year this domain was a single screen: a name, three paragraphs and two
+links. It did the job, but it told instead of showing. This redesign is the
+jump from card to site: projects, talks, a blog and a hero that draws live
+radio signals.
+
+## The decisions
+
+**Astro, static, on GitHub Pages.** The site compiles to plain HTML. No
+server, no database, no attack surface beyond the files being served.
+
+**A hand-rolled shader instead of a 3D library.** The hero background is a
+WebGL2 fragment shader a few dozen lines long: a spectrum waterfall, drifting
+carriers and an FFT band, the visual vocabulary of anyone who has ever used an
+SDR. Three.js would have cost 150+ KB to draw a rectangle.
+
+**Zero trackers, zero third parties.** No request leaves this domain: no
+analytics, no external fonts, no CDN. Typography is whatever your system
+ships. What you read here tells no one anything.
+
+**Actually bilingual.** Spanish at the root, English under `/en/`, with the
+full `hreflang` pair and a toggle that remembers your choice.
+
+The site's code is on
+[GitHub](https://github.com/jdpinedac/juanpineda.co) under the MIT license.
+
+73.

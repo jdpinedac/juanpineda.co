@@ -1,0 +1,15 @@
+name: ronda
+group: tools
+lang: TypeScript
+visibility: public
+repo: https://github.com/jdpinedac/ronda
+liveUrl: https://ronda.juanpineda.co
+featured: true
+order: 1
+summary:
+  es: >-
+    ¿Quién tiene la palabra? Diarización de hablantes que corre completa en tu
+    navegador: sin transcripción y sin subir audio a ningún lado.
+  en: >-
+    See who holds the floor. Speaker diarization that runs entirely in your
+    browser: no transcription, no audio upload.

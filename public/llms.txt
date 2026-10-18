@@ -1,0 +1,20 @@
+# juanpineda.co
+
+> Sitio personal de Juan Pineda: Tech Lead en nube y DevSecOps en Medellín,
+> Colombia. Charlas sobre seguridad y redes AV, herramientas propias,
+> radioafición y computación de alto desempeño. Bilingüe: español en la raíz,
+> inglés bajo /en/.
+
+## Páginas
+
+- [Proyectos](https://juanpineda.co/proyectos/): herramientas propias y radioafición
+- [Charlas](https://juanpineda.co/charlas/): conferencias AV y seguridad en América Latina
+- [Sobre mí](https://juanpineda.co/sobre-mi/): trayectoria completa
+- [Blog](https://juanpineda.co/blog/): notas con RSS en /rss.xml
+
+## English
+
+- [Projects](https://juanpineda.co/en/projects/)
+- [Talks](https://juanpineda.co/en/talks/)
+- [About](https://juanpineda.co/en/about/)
+- [Blog](https://juanpineda.co/en/blog/)
