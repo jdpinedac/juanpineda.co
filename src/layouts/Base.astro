@@ -30,10 +30,6 @@ const isRootHome = locale === 'es' && currentPath === '/';
 <html lang={locale}>
   <head>
     <meta charset="utf-8" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'none'; script-src 'self' 'sha256-c2eCFIPYD/jQYWvboZO+oM2wk8UyMVDzYpq3/TMCU1Y='; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; base-uri 'none'; form-action 'none'"
-    />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>

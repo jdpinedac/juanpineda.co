@@ -28,9 +28,7 @@ export default defineConfig({
   integrations: [
     mdx(),
     // Los alternates van como hreflang en cada página; la opción i18n del
-    // sitemap no sabe parear slugs localizados. Fuera el stub noindex /es/.
-    sitemap({
-      filter: (page) => page !== 'https://juanpineda.co/es/',
-    }),
+    // sitemap no sabe parear slugs localizados.
+    sitemap(),
   ],
 });
