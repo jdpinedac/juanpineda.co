@@ -53,6 +53,46 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
   const uRes = gl.getUniformLocation(prog, 'u_res');
   const uTime = gl.getUniformLocation(prog, 'u_time');
   const uLight = gl.getUniformLocation(prog, 'u_light');
+  const uNodes = gl.getUniformLocation(prog, 'u_nodes');
+
+  // Retícula esférica de Fibonacci: la rotación y proyección de los nodos
+  // se calculan aquí UNA vez por frame (no por pixel) y viajan por uniform.
+  const NODE_COUNT = 34; // debe coincidir con N en signal.frag.glsl
+  const GOLDEN_ANGLE = 2.39996322973;
+  const nodeZ = new Float32Array(NODE_COUNT);
+  const nodeR = new Float32Array(NODE_COUNT);
+  for (let i = 0; i < NODE_COUNT; i++) {
+    nodeZ[i] = 1 - (2 * (i + 0.5)) / NODE_COUNT;
+    nodeR[i] = Math.sqrt(1 - nodeZ[i] * nodeZ[i]);
+  }
+  const nodesOut = new Float32Array(NODE_COUNT * 3);
+
+  const projectNodes = (t: number) => {
+    const aspect = canvas.width / Math.max(canvas.height, 1);
+    const cy = Math.cos(t * 0.09);
+    const sy = Math.sin(t * 0.09);
+    const ax = 0.42 + 0.12 * Math.sin(t * 0.047);
+    const cx = Math.cos(ax);
+    const sx = Math.sin(ax);
+    for (let i = 0; i < NODE_COUNT; i++) {
+      const a = i * GOLDEN_ANGLE + 0.04 * Math.sin(t * 0.13 + i);
+      let x = nodeR[i] * Math.cos(a) + 0.008 * Math.sin(t * 0.21 + i * 1.7);
+      let y = nodeR[i] * Math.sin(a) + 0.008 * Math.cos(t * 0.17 + i * 2.3);
+      let z = nodeZ[i];
+      // giro (Y) + cabeceo (X)
+      const x1 = cy * x + sy * z;
+      const z1 = -sy * x + cy * z;
+      const y1 = cx * y - sx * z1;
+      const z2 = sx * y + cx * z1;
+      // perspectiva; pantalla en coords [0,aspect]x[0,1], centro áureo
+      const depth = z2 + 2.7;
+      const f = (0.52 * 2.2) / depth;
+      nodesOut[i * 3] = 0.618 * aspect + x1 * f;
+      nodesOut[i * 3 + 1] = 0.6 + y1 * f;
+      nodesOut[i * 3 + 2] = depth;
+    }
+    gl.uniform3fv(uNodes, nodesOut);
+  };
 
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
   const lightQuery = window.matchMedia('(prefers-color-scheme: light)');
@@ -82,6 +122,7 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, seconds);
     gl.uniform1f(uLight, isLight() ? 1 : 0);
+    projectNodes(seconds);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (!('ready' in canvas.dataset)) canvas.dataset.ready = '';
   };

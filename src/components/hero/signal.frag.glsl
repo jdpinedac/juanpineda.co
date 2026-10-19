@@ -1,20 +1,21 @@
 #version 300 es
-// Red esférica de Fibonacci en 3D: 21 nodos repartidos por espiral áurea
-// sobre una esfera que rota, enlaces por saltos de Fibonacci (+5/+8),
-// paquetes en ping-pong perpetuo y nodos que destellan al emitir/recibir.
-// Centro en la sección áurea; jerarquía y ritmos en potencias de 1/φ.
-// Paleta según u_light.
+// Red esférica de Fibonacci en 3D: la geometría (rotación + proyección de
+// los 34 nodos) llega ya calculada por frame vía u_nodes (xy pantalla en
+// coords [0,aspect]x[0,1] + profundidad); aquí solo se evalúan distancias
+// 2D. Enlaces por saltos de Fibonacci (+5/+8), un paquete por sentido en
+// cada enlace y destellos al emitir/recibir. Paleta según u_light.
 precision highp float;
 
 uniform vec2 u_res;
 uniform float u_time;
 uniform float u_light; // 0 = tema oscuro, 1 = tema claro
 
+const int N = 34; // Fibonacci; debe coincidir con NODE_COUNT en signal-field.ts
+uniform vec3 u_nodes[N];
+
 out vec4 outColor;
 
 const float PHI = 1.61803398875;
-const float GOLDEN_ANGLE = 2.39996322973;
-const int N = 34; // Fibonacci
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -29,32 +30,6 @@ float vnoise(vec2 p) {
     mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x),
     f.y
   );
-}
-
-// Retícula esférica de Fibonacci: punto i sobre la esfera unitaria.
-vec3 nodePos3(float i) {
-  float z = 1.0 - 2.0 * (i + 0.5) / float(N);
-  float r = sqrt(1.0 - z * z);
-  float a = i * GOLDEN_ANGLE;
-  return vec3(r * cos(a), r * sin(a), z);
-}
-
-// Rotación lenta de la esfera (giro + cabeceo suave).
-vec3 rotate(vec3 q) {
-  float ay = u_time * 0.09;
-  float ax = 0.42 + 0.12 * sin(u_time * 0.047);
-  float cy = cos(ay), sy = sin(ay);
-  q = vec3(cy * q.x + sy * q.z, q.y, -sy * q.x + cy * q.z);
-  float cx = cos(ax), sx = sin(ax);
-  q = vec3(q.x, cx * q.y - sx * q.z, sx * q.y + cx * q.z);
-  return q;
-}
-
-// Proyección en perspectiva: (pantalla.xy, profundidad).
-vec3 proj(vec3 q, vec2 c) {
-  q = rotate(q);
-  float depth = q.z + 2.7;
-  return vec3(c + 0.52 * q.xy / depth * 2.2, depth);
 }
 
 float sdSeg(vec2 p, vec2 a, vec2 b) {
@@ -74,41 +49,37 @@ void main() {
   vec3 vio = mix(vec3(0.56, 0.49, 1.0), vec3(0.345, 0.278, 0.839), u_light);
   vec3 bg = mix(vec3(0.047, 0.067, 0.09), vec3(0.957, 0.965, 0.969), u_light);
 
-  // Esfera centrada en la sección áurea.
-  vec2 c = vec2(0.618 * aspect, 0.60);
-
-  float linkAcc = 0.0;
   float nodeAcc = 0.0;
+  float linkAcc = 0.0;
   float flashAcc = 0.0;
   float pktAcc = 0.0;
   vec3 pktCol = vec3(0.0);
 
-  // Enlaces por saltos de Fibonacci: vecinos espaciales en la retícula.
   for (int i = 0; i < N; i++) {
     float fi = float(i);
-    vec3 pa = proj(nodePos3(fi), c);
+    vec3 pa = u_nodes[i];
     float dfa = smoothstep(4.1, 1.8, pa.z); // niebla: cerca brilla
 
+    // Enlaces por saltos de Fibonacci: vecinos espaciales en la retícula.
     for (int k = 0; k < 2; k++) {
-      float fj = fi + (k == 0 ? 5.0 : 8.0);
-      if (fj >= float(N)) continue;
-      vec3 pb = proj(nodePos3(fj), c);
+      int j = i + (k == 0 ? 5 : 8);
+      if (j >= N) continue;
+      float fj = float(j);
+      vec3 pb = u_nodes[j];
       float df = smoothstep(4.1, 1.8, 0.5 * (pa.z + pb.z));
 
       float d = sdSeg(p, pa.xy, pb.xy);
       // Culling: lejos del enlace no hay nada que sumar.
       if (d < 0.06) linkAcc += (exp(-d * 200.0) * 0.14 + exp(-d * 900.0) * 0.2) * df;
 
-      // Tráfico direccional: 2 paquetes por enlace en flujo continuo,
-      // desfasados 1/φ; el sentido lo fija el enlace. El ciclo se cierra
-      // en los nodos (el destino absorbe, el origen emite el siguiente),
-      // nunca a mitad del aire. Velocidades en potencias de 1/φ.
+      // Tráfico bidireccional: un paquete por sentido (petición y
+      // respuesta), fases y velocidades en potencias de 1/φ. El ciclo se
+      // cierra en los nodos: el destino absorbe y el origen emite.
       float dfb = smoothstep(4.1, 1.8, pb.z);
       float dir = step(0.5, hash(vec2(fj * 2.1, fi)));
       vec3 colPkt = mix(teal, vio, hash(vec2(fi + fj, 3.0)));
       for (int m = 0; m < 2; m++) {
         float fm = float(m);
-        // Ida y vuelta: un paquete por sentido (petición y respuesta).
         float pdir = (m == 0) ? dir : 1.0 - dir;
         vec2 oP = mix(pa.xy, pb.xy, pdir);  // origen en pantalla
         vec2 dP = mix(pb.xy, pa.xy, pdir);  // destino en pantalla
@@ -117,12 +88,11 @@ void main() {
         float sp = 0.15 * pow(1.0 / PHI, mod(fi + fj + fm, 3.0));
         float s = fract(u_time * sp + fm / PHI + hash(vec2(fj, fi)));
         float se = mix(s, 1.0 - s, pdir);
-        vec3 q3 = mix(nodePos3(fi), nodePos3(fj), se);
-        vec3 pq = proj(q3, c);
-        float dfq = smoothstep(4.1, 1.8, pq.z);
-        float dq = length(p - pq.xy);
+        vec2 q = mix(pa.xy, pb.xy, se);
+        float qd = mix(pa.z, pb.z, se);
+        float dq = length(p - q);
         if (dq < 0.05) {
-          float glow = exp(-dq * (240.0 + 120.0 * pq.z)) * dfq;
+          float glow = exp(-dq * (240.0 + 120.0 * qd)) * smoothstep(4.1, 1.8, qd);
           pktAcc += glow;
           pktCol += glow * colPkt;
         }
