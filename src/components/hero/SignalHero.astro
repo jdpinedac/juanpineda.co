@@ -19,17 +19,17 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
 <section class="hero">
   <!-- Fallback siempre presente: aurora + onda estática. El canvas WebGL se superpone cuando puede. -->
   <div class="fallback" aria-hidden="true">
+    <!-- Constelación estática: la misma esfera de Fibonacci del shader,
+         congelada en t=12 (el frame de prefers-reduced-motion). -->
     <svg
-      class="wave"
-      viewBox="0 0 1200 160"
-      preserveAspectRatio="none"
+      class="net"
+      viewBox="0 0 1600 1000"
+      preserveAspectRatio="xMidYMid slice"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <path
-        d="M0,80 C60,30 120,130 180,80 C240,30 300,130 360,80 C420,40 480,120 540,80 C600,30 660,130 720,80 C780,40 840,120 900,80 C960,30 1020,130 1080,80 C1140,50 1180,100 1200,80"
-        fill="none"
-        stroke="rgba(127,216,200,.35)"
-        stroke-width="2"></path>
+      <g class="links" stroke-width="1.2"><line x1="1370" y1="442" x2="1426" y2="516" opacity="0.11"/><line x1="1370" y1="442" x2="1380" y2="171" opacity="0.11"/><line x1="1206" y1="431" x2="1132" y2="260" opacity="0.03"/><line x1="1206" y1="431" x2="989" y2="434" opacity="0.02"/><line x1="1304" y1="657" x2="1119" y2="769" opacity="0.09"/><line x1="1304" y1="657" x2="1257" y2="756" opacity="0.12"/><line x1="1334" y1="246" x2="1380" y2="171" opacity="0.11"/><line x1="1334" y1="246" x2="1148" y2="82" opacity="0.08"/><line x1="1098" y1="572" x2="989" y2="434" opacity="0.02"/><line x1="1098" y1="572" x2="934" y2="703" opacity="0.04"/><line x1="1426" y1="516" x2="1257" y2="756" opacity="0.14"/><line x1="1426" y1="516" x2="1359" y2="283" opacity="0.15"/><line x1="1132" y1="260" x2="1148" y2="82" opacity="0.05"/><line x1="1132" y1="260" x2="945" y2="259" opacity="0.02"/><line x1="1119" y1="769" x2="934" y2="703" opacity="0.07"/><line x1="1119" y1="769" x2="991" y2="853" opacity="0.11"/><line x1="1380" y1="171" x2="1359" y2="283" opacity="0.14"/><line x1="1380" y1="171" x2="1177" y2="-12" opacity="0.13"/><line x1="989" y1="434" x2="945" y2="259" opacity="0.02"/><line x1="989" y1="434" x2="826" y2="519" opacity="0.02"/><line x1="1257" y1="756" x2="991" y2="853" opacity="0.14"/><line x1="1257" y1="756" x2="1161" y2="580" opacity="0.15"/><line x1="1148" y1="82" x2="1177" y2="-12" opacity="0.10"/><line x1="1148" y1="82" x2="927" y2="86" opacity="0.06"/><line x1="934" y1="703" x2="826" y2="519" opacity="0.04"/><line x1="934" y1="703" x2="791" y2="771" opacity="0.08"/><line x1="1359" y1="283" x2="1161" y2="580" opacity="0.16"/><line x1="1359" y1="283" x2="1122" y2="64" opacity="0.16"/><line x1="945" y1="259" x2="927" y2="86" opacity="0.04"/><line x1="945" y1="259" x2="775" y2="311" opacity="0.03"/><line x1="991" y1="853" x2="791" y2="771" opacity="0.12"/><line x1="991" y1="853" x2="842" y2="773" opacity="0.15"/><line x1="1177" y1="-12" x2="1122" y2="64" opacity="0.15"/><line x1="1177" y1="-12" x2="905" y2="-37" opacity="0.13"/><line x1="826" y1="519" x2="775" y2="311" opacity="0.03"/><line x1="826" y1="519" x2="673" y2="588" opacity="0.05"/><line x1="1161" y1="580" x2="842" y2="773" opacity="0.16"/><line x1="1161" y1="580" x2="901" y2="300" opacity="0.16"/><line x1="927" y1="86" x2="905" y2="-37" opacity="0.09"/><line x1="927" y1="86" x2="728" y2="151" opacity="0.07"/><line x1="791" y1="771" x2="673" y2="588" opacity="0.09"/><line x1="791" y1="771" x2="629" y2="685" opacity="0.12"/><line x1="1122" y1="64" x2="901" y2="300" opacity="0.16"/><line x1="1122" y1="64" x2="790" y2="19" opacity="0.16"/><line x1="775" y1="311" x2="728" y2="151" opacity="0.05"/><line x1="775" y1="311" x2="603" y2="375" opacity="0.06"/><line x1="842" y1="773" x2="629" y2="685" opacity="0.15"/><line x1="842" y1="773" x2="621" y2="446" opacity="0.16"/><line x1="905" y1="-37" x2="790" y2="19" opacity="0.14"/><line x1="905" y1="-37" x2="629" y2="126" opacity="0.12"/><line x1="673" y1="588" x2="603" y2="375" opacity="0.08"/><line x1="673" y1="588" x2="533" y2="399" opacity="0.11"/><line x1="901" y1="300" x2="621" y2="446" opacity="0.16"/><line x1="728" y1="151" x2="629" y2="126" opacity="0.10"/><line x1="629" y1="685" x2="533" y2="399" opacity="0.14"/></g>
+      <g class="pkts"><circle cx="1188" cy="390" r="4" opacity="0.13"/><circle cx="1247" cy="168" r="4" opacity="0.34"/><circle cx="1368" cy="234" r="4" opacity="0.63"/><circle cx="1180" cy="615" r="4" opacity="0.67"/><circle cx="813" cy="780" r="4" opacity="0.51"/><circle cx="807" cy="528" r="4" opacity="0.23"/><circle cx="765" cy="277" r="4" opacity="0.23"/><circle cx="781" cy="36" r="4" opacity="0.54"/></g>
+      <g class="dots"><circle cx="1370" cy="442" r="4.6" opacity="0.56"/><circle cx="1206" cy="431" r="2.9" opacity="0.35"/><circle cx="1304" cy="657" r="4.4" opacity="0.54"/><circle cx="1334" cy="246" r="3.8" opacity="0.47"/><circle cx="1098" cy="572" r="2.6" opacity="0.32"/><circle cx="1426" cy="516" r="6.3" opacity="0.77"/><circle cx="1132" cy="260" r="2.8" opacity="0.34"/><circle cx="1119" cy="769" r="4.2" opacity="0.51"/><circle cx="1380" cy="171" r="5.0" opacity="0.61"/><circle cx="989" cy="434" r="2.3" opacity="0.28"/><circle cx="1257" cy="756" r="6.6" opacity="0.81"/><circle cx="1148" cy="82" r="4.0" opacity="0.49"/><circle cx="934" cy="703" r="3.3" opacity="0.41"/><circle cx="1359" cy="283" r="5.5" opacity="0.67"/><circle cx="945" cy="259" r="2.4" opacity="0.30"/><circle cx="991" cy="853" r="6.2" opacity="0.75"/><circle cx="1177" cy="-12" r="5.7" opacity="0.69"/><circle cx="826" cy="519" r="2.7" opacity="0.33"/><circle cx="1161" cy="580" r="5.6" opacity="0.68"/><circle cx="927" cy="86" r="3.2" opacity="0.39"/><circle cx="791" cy="771" r="5.2" opacity="0.63"/><circle cx="1122" cy="64" r="6.4" opacity="0.78"/><circle cx="775" cy="311" r="2.8" opacity="0.35"/><circle cx="842" cy="773" r="5.5" opacity="0.67"/><circle cx="905" cy="-37" r="4.5" opacity="0.55"/><circle cx="673" cy="588" r="4.4" opacity="0.54"/><circle cx="901" cy="300" r="6.4" opacity="0.78"/><circle cx="728" cy="151" r="3.8" opacity="0.47"/><circle cx="629" cy="685" r="5.1" opacity="0.63"/><circle cx="790" cy="19" r="5.2" opacity="0.63"/><circle cx="603" cy="375" r="4.7" opacity="0.57"/><circle cx="621" cy="446" r="6.4" opacity="0.78"/><circle cx="629" cy="126" r="5.1" opacity="0.63"/><circle cx="533" cy="399" r="5.0" opacity="0.61"/></g>
     </svg>
   </div>
   <canvas class="signal" data-signal-canvas aria-hidden="true"></canvas>
@@ -94,13 +94,20 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
       radial-gradient(45% 55% at 82% 12%, rgba(129, 110, 255, 0.18), transparent 70%),
       radial-gradient(55% 65% at 65% 95%, rgba(230, 180, 80, 0.08), transparent 70%);
   }
-  .wave {
+  .net {
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 26%;
+    inset: 0;
     width: 100%;
-    height: 160px;
+    height: 100%;
+  }
+  .net .links {
+    stroke: var(--fg-muted);
+  }
+  .net .dots {
+    fill: var(--accent);
+  }
+  .net .pkts {
+    fill: var(--violet);
   }
   .signal {
     position: absolute;
