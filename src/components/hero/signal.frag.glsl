@@ -105,16 +105,18 @@ void main() {
       // nunca a mitad del aire. Velocidades en potencias de 1/φ.
       float dfb = smoothstep(4.1, 1.8, pb.z);
       float dir = step(0.5, hash(vec2(fj * 2.1, fi)));
-      vec2 oP = mix(pa.xy, pb.xy, dir);  // origen en pantalla
-      vec2 dP = mix(pb.xy, pa.xy, dir);  // destino en pantalla
-      float dfO = mix(dfa, dfb, dir);
-      float dfD = mix(dfb, dfa, dir);
       vec3 colPkt = mix(teal, vio, hash(vec2(fi + fj, 3.0)));
       for (int m = 0; m < 2; m++) {
         float fm = float(m);
+        // Ida y vuelta: un paquete por sentido (petición y respuesta).
+        float pdir = (m == 0) ? dir : 1.0 - dir;
+        vec2 oP = mix(pa.xy, pb.xy, pdir);  // origen en pantalla
+        vec2 dP = mix(pb.xy, pa.xy, pdir);  // destino en pantalla
+        float dfO = mix(dfa, dfb, pdir);
+        float dfD = mix(dfb, dfa, pdir);
         float sp = 0.15 * pow(1.0 / PHI, mod(fi + fj + fm, 3.0));
         float s = fract(u_time * sp + fm / PHI + hash(vec2(fj, fi)));
-        float se = mix(s, 1.0 - s, dir);
+        float se = mix(s, 1.0 - s, pdir);
         vec3 q3 = mix(nodePos3(fi), nodePos3(fj), se);
         vec3 pq = proj(q3, c);
         float dfq = smoothstep(4.1, 1.8, pq.z);
