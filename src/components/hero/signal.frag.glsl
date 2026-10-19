@@ -14,7 +14,7 @@ out vec4 outColor;
 
 const float PHI = 1.61803398875;
 const float GOLDEN_ANGLE = 2.39996322973;
-const int N = 21; // Fibonacci
+const int N = 34; // Fibonacci
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -96,30 +96,49 @@ void main() {
       float df = smoothstep(4.1, 1.8, 0.5 * (pa.z + pb.z));
 
       float d = sdSeg(p, pa.xy, pb.xy);
-      linkAcc += (exp(-d * 180.0) * 0.16 + exp(-d * 850.0) * 0.2) * df;
+      // Culling: lejos del enlace no hay nada que sumar.
+      if (d < 0.06) linkAcc += (exp(-d * 200.0) * 0.14 + exp(-d * 900.0) * 0.2) * df;
 
-      // Paquete en ping-pong perpetuo (seno: desacelera al llegar);
-      // velocidades en potencias de 1/φ, fases áureas.
-      float sp = 0.5 * pow(1.0 / PHI, mod(fi + fj, 3.0));
-      float s = 0.5 + 0.5 * sin(u_time * sp * 6.2832 + (fi * PHI + fj) * GOLDEN_ANGLE);
-      vec3 q3 = mix(nodePos3(fi), nodePos3(fj), s);
-      vec3 pq = proj(q3, c);
-      float dfq = smoothstep(4.1, 1.8, pq.z);
-      float glow = exp(-length(p - pq.xy) * (240.0 + 120.0 * pq.z)) * dfq;
-      pktAcc += glow;
-      pktCol += glow * mix(teal, vio, hash(vec2(fi + fj, 3.0)));
+      // Tráfico direccional: 2 paquetes por enlace en flujo continuo,
+      // desfasados 1/φ; el sentido lo fija el enlace. El ciclo se cierra
+      // en los nodos (el destino absorbe, el origen emite el siguiente),
+      // nunca a mitad del aire. Velocidades en potencias de 1/φ.
+      float dfb = smoothstep(4.1, 1.8, pb.z);
+      float dir = step(0.5, hash(vec2(fj * 2.1, fi)));
+      vec2 oP = mix(pa.xy, pb.xy, dir);  // origen en pantalla
+      vec2 dP = mix(pb.xy, pa.xy, dir);  // destino en pantalla
+      float dfO = mix(dfa, dfb, dir);
+      float dfD = mix(dfb, dfa, dir);
+      vec3 colPkt = mix(teal, vio, hash(vec2(fi + fj, 3.0)));
+      for (int m = 0; m < 2; m++) {
+        float fm = float(m);
+        float sp = 0.15 * pow(1.0 / PHI, mod(fi + fj + fm, 3.0));
+        float s = fract(u_time * sp + fm / PHI + hash(vec2(fj, fi)));
+        float se = mix(s, 1.0 - s, dir);
+        vec3 q3 = mix(nodePos3(fi), nodePos3(fj), se);
+        vec3 pq = proj(q3, c);
+        float dfq = smoothstep(4.1, 1.8, pq.z);
+        float dq = length(p - pq.xy);
+        if (dq < 0.05) {
+          float glow = exp(-dq * (240.0 + 120.0 * pq.z)) * dfq;
+          pktAcc += glow;
+          pktCol += glow * colPkt;
+        }
 
-      // Destello del nodo al emitir/recibir (el paquete toca el extremo).
-      float atA = smoothstep(0.14, 0.0, s);
-      float atB = smoothstep(0.86, 1.0, s);
-      flashAcc += exp(-length(p - pa.xy) * 120.0) * atA * dfa;
-      flashAcc += exp(-length(p - pb.xy) * 120.0) * atB * smoothstep(4.1, 1.8, pb.z);
+        // Destello: el origen al emitir (s≈0), el destino al recibir (s≈1).
+        float dO = length(p - oP);
+        float dD = length(p - dP);
+        if (dO < 0.07) flashAcc += exp(-dO * 120.0) * smoothstep(0.1, 0.0, s) * dfO;
+        if (dD < 0.07) flashAcc += exp(-dD * 120.0) * smoothstep(0.9, 1.0, s) * dfD;
+      }
     }
 
     // Nodo base: jerarquía áurea en tamaño/brillo, niebla por profundidad.
     float wgt = 0.45 + 0.55 * pow(1.0 / PHI, mod(fi, 5.0) * 0.5);
     float dn = length(p - pa.xy);
-    nodeAcc += (exp(-dn * (210.0 + 110.0 * pa.z) / wgt) * 0.95 + exp(-dn * 60.0) * 0.07) * wgt * dfa;
+    if (dn < 0.16) {
+      nodeAcc += (exp(-dn * (230.0 + 120.0 * pa.z) / wgt) * 0.95 + exp(-dn * 70.0) * 0.06) * wgt * dfa;
+    }
   }
 
   // Composición por mezcla (funciona igual sobre fondo claro u oscuro).
