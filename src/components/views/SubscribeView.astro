@@ -1,0 +1,126 @@
+---
+import Base from '../../layouts/Base.astro';
+import { SITE } from '../../config/site';
+import { altRoute, ROUTES, type Locale } from '../../i18n/routes';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const COPY = {
+  title: { es: 'Suscríbete', en: 'Subscribe' },
+  desc: {
+    es: 'Sigue el blog por RSS: cada entrada nueva llega a tu lector, sin algoritmos de por medio.',
+    en: 'Follow the blog via RSS: every new post lands in your reader, with no algorithms in between.',
+  },
+  what: {
+    es: 'RSS es el estándar abierto para suscribirse a sitios: eliges un lector, le pegas la dirección de un feed, y él revisa por ti si hay algo nuevo. Sin cuentas, sin correo, sin que nadie decida qué ves.',
+    en: 'RSS is the open standard for subscribing to websites: pick a reader, paste a feed address into it, and it checks for new posts on your behalf. No accounts, no email, nobody deciding what you see.',
+  },
+  how: {
+    es: 'Copia una de estas direcciones en tu lector — por ejemplo Feedly, NetNewsWire, Thunderbird o Miniflux:',
+    en: 'Copy one of these addresses into your reader — for example Feedly, NetNewsWire, Thunderbird or Miniflux:',
+  },
+  feedEs: { es: 'Entradas en español', en: 'Posts in Spanish' },
+  feedEn: { es: 'Entradas en inglés', en: 'Posts in English' },
+  note: {
+    es: 'Si abres el feed en el navegador verás XML crudo: es normal, ese archivo es para el lector, no para leerlo a ojo.',
+    en: 'If you open the feed in your browser you will see raw XML: that is normal — the file is meant for your reader, not for human eyes.',
+  },
+  back: { es: 'Volver al blog', en: 'Back to the blog' },
+};
+
+const FEEDS = [
+  { label: COPY.feedEs[locale], url: new URL(ROUTES.rss.es, SITE.url).href },
+  { label: COPY.feedEn[locale], url: new URL(ROUTES.rss.en, SITE.url).href },
+];
+---
+
+<Base
+  locale={locale}
+  title={`${COPY.title[locale]} · ${SITE.title[locale]}`}
+  description={COPY.desc[locale]}
+  altPath={altRoute('subscribe', locale)}
+>
+  <header class="wrap head">
+    <p class="kicker">RSS</p>
+    <h1>{COPY.title[locale]}</h1>
+    <p class="lede measure">{COPY.desc[locale]}</p>
+  </header>
+  <section class="wrap block">
+    <div class="measure">
+    <p>{COPY.what[locale]}</p>
+    <p>{COPY.how[locale]}</p>
+    <ul class="feeds">
+      {
+        FEEDS.map((f) => (
+          <li>
+            <span class="label">{f.label}</span>
+            <code>{f.url}</code>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="note">{COPY.note[locale]}</p>
+    <p><a class="link-underline" href={ROUTES.blog[locale]}>← {COPY.back[locale]}</a></p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: 140px;
+  }
+  .kicker {
+    font-family: var(--mono);
+    font-size: var(--text-xs);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--violet);
+    margin: 0 0 var(--space-2);
+  }
+  h1 {
+    font-size: var(--text-2xl);
+  }
+  .lede {
+    color: var(--fg-muted);
+    margin-top: var(--space-3);
+  }
+  .block {
+    padding-block: var(--space-5) 0;
+  }
+  .feeds {
+    list-style: none;
+    margin: var(--space-4) 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-3);
+  }
+  .feeds li {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--card-bg);
+    padding: var(--space-3) var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    min-width: 0;
+  }
+  .feeds .label {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+  .feeds code {
+    font-family: var(--mono);
+    font-size: 14px;
+    color: var(--accent);
+    user-select: all;
+    overflow-x: auto;
+  }
+  .note {
+    font-size: var(--text-sm);
+    color: var(--fg-muted);
+  }
+</style>

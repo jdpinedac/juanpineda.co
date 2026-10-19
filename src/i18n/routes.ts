@@ -10,6 +10,7 @@ export const ROUTES = {
   about: { es: '/sobre-mi/', en: '/en/about/' },
   blog: { es: '/blog/', en: '/en/blog/' },
   rss: { es: '/rss.xml', en: '/en/rss.xml' },
+  subscribe: { es: '/suscribete/', en: '/en/subscribe/' },
 } as const;
 
 export type RouteKey = keyof typeof ROUTES;
