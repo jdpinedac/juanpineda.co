@@ -2,6 +2,7 @@
 import { ROUTES, type Locale } from '../i18n/routes';
 import { useT } from '../i18n/utils';
 import LangToggle from './LangToggle.astro';
+import ThemeToggle from './ThemeToggle.astro';
 
 interface Props {
   locale: Locale;
@@ -43,7 +44,10 @@ const current = Astro.url.pathname;
         }
       </ul>
     </nav>
-    <LangToggle locale={locale} altPath={altPath} />
+    <div class="controls">
+      <ThemeToggle locale={locale} />
+      <LangToggle locale={locale} altPath={altPath} />
+    </div>
   </div>
 </header>
 
@@ -64,6 +68,12 @@ const current = Astro.url.pathname;
     align-items: center;
     gap: var(--space-4);
     min-height: 64px;
+  }
+  .controls {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
   }
   .wordmark {
     font-family: var(--serif);
@@ -96,11 +106,16 @@ const current = Astro.url.pathname;
   .wordmark .short {
     display: none;
   }
+  /* Móvil: dos filas ordenadas (marca + controles arriba, secciones abajo)
+     en vez de dejar que la lista se parta a mitad de camino. */
   @media (max-width: 640px) {
     .bar {
-      gap: var(--space-2);
+      flex-wrap: wrap;
+      gap: 0 var(--space-2);
+      padding-block: 6px;
     }
     .wordmark {
+      order: 1;
       font-size: 18px;
       white-space: nowrap;
     }
@@ -109,6 +124,17 @@ const current = Astro.url.pathname;
     }
     .wordmark .short {
       display: inline;
+    }
+    .controls {
+      order: 2;
+    }
+    nav {
+      order: 3;
+      width: 100%;
+    }
+    nav ul {
+      gap: 0;
+      justify-content: space-between;
     }
     nav a {
       padding-inline: 7px;

@@ -13,6 +13,7 @@
   --nav-bg: rgba(12, 17, 23, 0.55);
   --nav-line: rgba(255, 255, 255, 0.04);
   --card-bg: rgba(255, 255, 255, 0.015);
+  color-scheme: dark;
 
   /* tipografía */
   --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
@@ -49,9 +50,12 @@
 }
 
 /* Modo claro: mismos papeles, tinte frío acorde al teal. Pares verificados
-   AA (≥4.5:1) sobre --bg y --surface. El hero conserva su isla oscura. */
+   AA (≥4.5:1) sobre --bg y --surface. El hero conserva su isla oscura.
+   Dos bloques con LOS MISMOS valores: la media query aplica cuando no hay
+   elección guardada, y [data-theme="light"] cuando el botón de tema la fija.
+   Si cambias un valor aquí, cámbialo en ambos. */
 @media (prefers-color-scheme: light) {
-  :root {
+  :root:not([data-theme="dark"]) {
     --bg: #f4f6f7;
     --surface: #ffffff;
     --line: #d9e0e5;
@@ -66,6 +70,21 @@
     --card-bg: #ffffff;
     color-scheme: light;
   }
+}
+:root[data-theme="light"] {
+  --bg: #f4f6f7;
+  --surface: #ffffff;
+  --line: #d9e0e5;
+  --fg: #2a333d;
+  --fg-strong: #10181f;
+  --fg-muted: #566270;
+  --accent: #0c7a6a;
+  --accent-dim: rgba(12, 122, 106, 0.28);
+  --violet: #5847d6;
+  --nav-bg: rgba(244, 246, 247, 0.72);
+  --nav-line: rgba(16, 24, 31, 0.08);
+  --card-bg: #ffffff;
+  color-scheme: light;
 }
 
 @media (max-width: 560px) {

@@ -1,0 +1,112 @@
+---
+import type { Locale } from '../i18n/routes';
+import { useT } from '../i18n/utils';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useT(locale);
+---
+
+<button class="theme-toggle" type="button" aria-label={t('theme.aria')} data-theme-toggle>
+  <!-- Sol: visible en tema oscuro (invita a pasar a claro) -->
+  <svg class="icon sun" viewBox="0 0 24 24" width="16" height="16" fill="none"
+    stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"></path>
+  </svg>
+  <!-- Luna: visible en tema claro (invita a pasar a oscuro) -->
+  <svg class="icon moon" viewBox="0 0 24 24" width="16" height="16" fill="none"
+    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path>
+  </svg>
+</button>
+
+<script>
+  // Alterna claro/oscuro fijando data-theme en <html> y guardándolo en
+  // localStorage ('theme'); el script inline de Base.astro lo aplica antes
+  // del primer pintado. Sin elección guardada manda prefers-color-scheme.
+  const root = document.documentElement;
+  const mql = window.matchMedia('(prefers-color-scheme: dark)');
+  // Mismos fondos que --bg en tokens.css; si cambian allá, cambian acá.
+  const BG = { dark: '#0c1117', light: '#f4f6f7' } as const;
+
+  function effective(): 'dark' | 'light' {
+    const forced = root.getAttribute('data-theme');
+    if (forced === 'dark' || forced === 'light') return forced;
+    return mql.matches ? 'dark' : 'light';
+  }
+
+  function syncThemeColor() {
+    const bg = BG[effective()];
+    document
+      .querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]')
+      .forEach((m) => m.setAttribute('content', bg));
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-theme-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = effective() === 'dark' ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      try {
+        localStorage.setItem('theme', next);
+      } catch {
+        /* sin almacenamiento, el cambio dura la sesión de la página */
+      }
+      syncThemeColor();
+    });
+  });
+
+  if (root.hasAttribute('data-theme')) syncThemeColor();
+</script>
+
+<style>
+  .theme-toggle {
+    font: inherit;
+    color: var(--fg-muted);
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    min-width: var(--tap);
+    padding-inline: 12px;
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    color: var(--accent);
+    border-color: var(--accent-dim);
+  }
+  .icon {
+    display: block;
+  }
+  /* Qué icono se ve según el tema EFECTIVO (elección guardada o sistema):
+     espejo de la lógica de tokens.css. */
+  .moon {
+    display: none;
+  }
+  @media (prefers-color-scheme: light) {
+    :global(html:not([data-theme="dark"])) .sun {
+      display: none;
+    }
+    :global(html:not([data-theme="dark"])) .moon {
+      display: block;
+    }
+  }
+  :global(html[data-theme="light"]) .sun {
+    display: none;
+  }
+  :global(html[data-theme="light"]) .moon {
+    display: block;
+  }
+  :global(html[data-theme="dark"]) .sun {
+    display: block;
+  }
+  :global(html[data-theme="dark"]) .moon {
+    display: none;
+  }
+</style>

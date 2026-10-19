@@ -32,6 +32,7 @@ const isRootHome = locale === 'es' && currentPath === '/';
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
+    <script is:inline>(function(){try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)}catch(e){}})();</script>
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content={SITE.author} />
@@ -66,7 +67,7 @@ const isRootHome = locale === 'es' && currentPath === '/';
     <meta name="twitter:card" content="summary_large_image" />
     {
       isRootHome && (
-        <script is:inline>(function(){try{var s=localStorage.getItem("lang");if(location.pathname==="/"&&location.search.indexOf("hl=es")<0&&(s==="en"||(!s&&/^en\b/i.test(navigator.language))))location.replace("/en/")}catch(e){}})();</script>
+        <script is:inline>(function(){try{var s=localStorage.getItem("lang");if(location.pathname==="/"&&location.search.indexOf("hl=es")<0&&(s==="en"||(!s&&/^en\b/i.test(navigator.language)&&!(navigator.languages||[]).some(function(l){return /^es\b/i.test(l)}))))location.replace("/en/")}catch(e){}})();</script>
       )
     }
     <slot name="head" />
