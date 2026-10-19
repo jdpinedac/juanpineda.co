@@ -11,7 +11,7 @@ const DPR_CAP = 1.75;
 const STILL_TIME = 12.0;
 
 /**
- * Monta la cascada SDR en el canvas. Si WebGL2 no está disponible no hace
+ * Monta el campo de señal (red 3D de Fibonacci) en el canvas. Si WebGL2 no está disponible no hace
  * nada y el fallback CSS queda a la vista. Devuelve una función de limpieza.
  */
 export function mountSignalField(canvas: HTMLCanvasElement): () => void {
@@ -52,8 +52,15 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
 
   const uRes = gl.getUniformLocation(prog, 'u_res');
   const uTime = gl.getUniformLocation(prog, 'u_time');
+  const uLight = gl.getUniformLocation(prog, 'u_light');
 
   const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const lightQuery = window.matchMedia('(prefers-color-scheme: light)');
+  // Tema efectivo: la elección del botón (data-theme) manda; si no, el sistema.
+  const isLight = () => {
+    const forced = document.documentElement.getAttribute('data-theme');
+    return forced === 'light' || (forced !== 'dark' && lightQuery.matches);
+  };
   let raf = 0;
   let running = false;
   let inView = true;
@@ -74,6 +81,7 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
     resize();
     gl.uniform2f(uRes, canvas.width, canvas.height);
     gl.uniform1f(uTime, seconds);
+    gl.uniform1f(uLight, isLight() ? 1 : 0);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     if (!('ready' in canvas.dataset)) canvas.dataset.ready = '';
   };
@@ -107,6 +115,19 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
   document.addEventListener('visibilitychange', onVisibility);
   motionQuery.addEventListener('change', update);
 
+  // Cambio de tema (sistema o botón): si el loop corre lo toma en el próximo
+  // frame; si está quieto por reduced-motion, redibuja el frame fijo.
+  const onTheme = () => {
+    if (disposed) return;
+    if (motionQuery.matches) drawFrame(STILL_TIME);
+  };
+  lightQuery.addEventListener('change', onTheme);
+  const themeObserver = new MutationObserver(onTheme);
+  themeObserver.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['data-theme'],
+  });
+
   const onLost = () => {
     // Pérdida de contexto = terminal: el fallback CSS vuelve y nada
     // (IO, visibilitychange, motion) puede reencender el loop muerto.
@@ -132,6 +153,8 @@ export function mountSignalField(canvas: HTMLCanvasElement): () => void {
     io.disconnect();
     document.removeEventListener('visibilitychange', onVisibility);
     motionQuery.removeEventListener('change', update);
+    lightQuery.removeEventListener('change', onTheme);
+    themeObserver.disconnect();
     canvas.removeEventListener('webglcontextlost', onLost);
     window.removeEventListener('resize', onResize);
   };

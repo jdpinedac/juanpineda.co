@@ -39,9 +39,10 @@ npm run preview   # sirve dist/
 - `src/content/` — colecciones: `projects/*.yaml`, `talks/*.yaml` (campos
   bilingües `{es,en}`) y `blog/{es,en}/*.mdx` emparejados por
   `translationKey` (el build falla si falta una traducción).
-- `src/components/hero/` — hero "Cascada SDR": shader WebGL2 con carga
-  diferida, fallback CSS, pausa fuera de viewport y respeto de
-  `prefers-reduced-motion`.
+- `src/components/hero/` — hero "Red de Fibonacci": shader WebGL2 (esfera
+  de Fibonacci en 3D con paquetes y nodos que destellan; paleta clara u
+  oscura vía uniform `u_light`) con carga diferida, fallback CSS, pausa
+  fuera de viewport y respeto de `prefers-reduced-motion`.
 - `src/i18n/` — rutas localizadas, diccionario de interfaz y utilidades.
 - `src/config/site.ts` — datos del sitio: nombre público, correo de contacto,
   LinkedIn/GitHub y títulos por idioma. Cambios de contacto se hacen aquí.

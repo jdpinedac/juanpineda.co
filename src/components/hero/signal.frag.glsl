@@ -1,11 +1,20 @@
 #version 300 es
-// Cascada SDR: espectro desplazándose, portadoras que derivan y banda FFT.
+// Red esférica de Fibonacci en 3D: 21 nodos repartidos por espiral áurea
+// sobre una esfera que rota, enlaces por saltos de Fibonacci (+5/+8),
+// paquetes en ping-pong perpetuo y nodos que destellan al emitir/recibir.
+// Centro en la sección áurea; jerarquía y ritmos en potencias de 1/φ.
+// Paleta según u_light.
 precision highp float;
 
 uniform vec2 u_res;
 uniform float u_time;
+uniform float u_light; // 0 = tema oscuro, 1 = tema claro
 
 out vec4 outColor;
+
+const float PHI = 1.61803398875;
+const float GOLDEN_ANGLE = 2.39996322973;
+const int N = 21; // Fibonacci
 
 float hash(vec2 p) {
   return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
@@ -22,54 +31,121 @@ float vnoise(vec2 p) {
   );
 }
 
-float fbm(vec2 p) {
-  float v = 0.0;
-  float a = 0.55;
-  for (int i = 0; i < 5; i++) {
-    v += a * vnoise(p);
-    p *= 2.03;
-    a *= 0.5;
-  }
-  return v;
+// Retícula esférica de Fibonacci: punto i sobre la esfera unitaria.
+vec3 nodePos3(float i) {
+  float z = 1.0 - 2.0 * (i + 0.5) / float(N);
+  float r = sqrt(1.0 - z * z);
+  float a = i * GOLDEN_ANGLE;
+  return vec3(r * cos(a), r * sin(a), z);
+}
+
+// Rotación lenta de la esfera (giro + cabeceo suave).
+vec3 rotate(vec3 q) {
+  float ay = u_time * 0.09;
+  float ax = 0.42 + 0.12 * sin(u_time * 0.047);
+  float cy = cos(ay), sy = sin(ay);
+  q = vec3(cy * q.x + sy * q.z, q.y, -sy * q.x + cy * q.z);
+  float cx = cos(ax), sx = sin(ax);
+  q = vec3(q.x, cx * q.y - sx * q.z, sx * q.y + cx * q.z);
+  return q;
+}
+
+// Proyección en perspectiva: (pantalla.xy, profundidad).
+vec3 proj(vec3 q, vec2 c) {
+  q = rotate(q);
+  float depth = q.z + 2.7;
+  return vec3(c + 0.52 * q.xy / depth * 2.2, depth);
+}
+
+float sdSeg(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a;
+  vec2 ba = b - a;
+  float h = clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0);
+  return length(pa - ba * h);
 }
 
 void main() {
+  float aspect = u_res.x / u_res.y;
   vec2 uv = gl_FragCoord.xy / u_res;
+  vec2 p = vec2(uv.x * aspect, uv.y);
 
-  // Cascada: campo de espectro cayendo lentamente.
-  float t = u_time * 0.06;
-  vec2 sp = vec2(uv.x * 7.0, uv.y * 2.6 + t * 4.0);
-  float s = fbm(sp);
-  s = pow(smoothstep(0.38, 0.95, s), 1.6);
+  // Misma paleta que tokens.css en cada tema.
+  vec3 teal = mix(vec3(0.498, 0.847, 0.784), vec3(0.047, 0.478, 0.416), u_light);
+  vec3 vio = mix(vec3(0.56, 0.49, 1.0), vec3(0.345, 0.278, 0.839), u_light);
+  vec3 bg = mix(vec3(0.047, 0.067, 0.09), vec3(0.957, 0.965, 0.969), u_light);
 
-  // Portadoras: líneas verticales persistentes con deriva y parpadeo.
-  float car = 0.0;
-  for (int i = 0; i < 4; i++) {
+  // Esfera centrada en la sección áurea.
+  vec2 c = vec2(0.618 * aspect, 0.60);
+
+  float linkAcc = 0.0;
+  float nodeAcc = 0.0;
+  float flashAcc = 0.0;
+  float pktAcc = 0.0;
+  vec3 pktCol = vec3(0.0);
+
+  // Enlaces por saltos de Fibonacci: vecinos espaciales en la retícula.
+  for (int i = 0; i < N; i++) {
     float fi = float(i);
-    float fx = hash(vec2(fi * 3.7, 1.0)) * 0.8 + 0.1;
-    fx += 0.015 * sin(u_time * 0.3 + fi * 2.2);
-    float d = abs(uv.x - fx);
-    float str = 0.6 + 0.4 * sin(u_time * (0.5 + hash(vec2(fi, 7.0))) + fi);
-    car += str * exp(-d * 420.0) * 1.3 + str * exp(-d * 60.0) * 0.12;
+    vec3 pa = proj(nodePos3(fi), c);
+    float dfa = smoothstep(4.1, 1.8, pa.z); // niebla: cerca brilla
+
+    for (int k = 0; k < 2; k++) {
+      float fj = fi + (k == 0 ? 5.0 : 8.0);
+      if (fj >= float(N)) continue;
+      vec3 pb = proj(nodePos3(fj), c);
+      float df = smoothstep(4.1, 1.8, 0.5 * (pa.z + pb.z));
+
+      float d = sdSeg(p, pa.xy, pb.xy);
+      linkAcc += (exp(-d * 180.0) * 0.16 + exp(-d * 850.0) * 0.2) * df;
+
+      // Paquete en ping-pong perpetuo (seno: desacelera al llegar);
+      // velocidades en potencias de 1/φ, fases áureas.
+      float sp = 0.5 * pow(1.0 / PHI, mod(fi + fj, 3.0));
+      float s = 0.5 + 0.5 * sin(u_time * sp * 6.2832 + (fi * PHI + fj) * GOLDEN_ANGLE);
+      vec3 q3 = mix(nodePos3(fi), nodePos3(fj), s);
+      vec3 pq = proj(q3, c);
+      float dfq = smoothstep(4.1, 1.8, pq.z);
+      float glow = exp(-length(p - pq.xy) * (240.0 + 120.0 * pq.z)) * dfq;
+      pktAcc += glow;
+      pktCol += glow * mix(teal, vio, hash(vec2(fi + fj, 3.0)));
+
+      // Destello del nodo al emitir/recibir (el paquete toca el extremo).
+      float atA = smoothstep(0.14, 0.0, s);
+      float atB = smoothstep(0.86, 1.0, s);
+      flashAcc += exp(-length(p - pa.xy) * 120.0) * atA * dfa;
+      flashAcc += exp(-length(p - pb.xy) * 120.0) * atB * smoothstep(4.1, 1.8, pb.z);
+    }
+
+    // Nodo base: jerarquía áurea en tamaño/brillo, niebla por profundidad.
+    float wgt = 0.45 + 0.55 * pow(1.0 / PHI, mod(fi, 5.0) * 0.5);
+    float dn = length(p - pa.xy);
+    nodeAcc += (exp(-dn * (210.0 + 110.0 * pa.z) / wgt) * 0.95 + exp(-dn * 60.0) * 0.07) * wgt * dfa;
   }
 
-  // Banda FFT al pie.
-  float bins = floor(uv.x * 96.0) / 96.0;
-  float amp = 0.05 + 0.22 * fbm(vec2(bins * 14.0, u_time * 0.9));
-  float fft = smoothstep(amp, amp - 0.012, uv.y) * step(uv.y, 0.30) * 0.9;
-
-  vec3 teal = vec3(0.498, 0.847, 0.784);
-  vec3 vio = vec3(0.56, 0.49, 1.0);
-  vec3 bg = vec3(0.047, 0.067, 0.09);
-
+  // Composición por mezcla (funciona igual sobre fondo claro u oscuro).
   vec3 col = bg;
-  col += s * mix(vio, teal, uv.x) * (0.16 + 0.5 * uv.y);
-  col += car * teal * 0.8;
-  col += fft * mix(teal, vio, bins) * 0.55;
+  col = mix(col, mix(vio, teal, uv.x), clamp(linkAcc * 0.55, 0.0, 1.0));
+  col = mix(col, teal, clamp(nodeAcc, 0.0, 1.0));
+  col = mix(col, pktCol / max(pktAcc, 0.001), clamp(pktAcc, 0.0, 1.0) * 0.85);
+  col = mix(col, mix(teal, vec3(1.0 - 0.85 * u_light), 0.5), clamp(flashAcc, 0.0, 1.0) * 0.9);
+
+  // Más tenue abajo, donde vive el texto del hero.
+  col = mix(bg, col, 0.35 + 0.5 * uv.y);
+
+  // Banda de tráfico al pie.
+  float bins = floor(uv.x * 96.0) / 96.0;
+  float amp = 0.06 + 0.16 * vnoise(vec2(bins * 14.0, u_time * 0.9)) +
+    0.08 * vnoise(vec2(bins * 40.0, u_time * 1.7));
+  float fft = smoothstep(amp, amp - 0.012, uv.y) * step(uv.y, 0.30) * 0.9;
+  col = mix(col, mix(teal, vio, bins), fft * 0.5);
 
   // Viñeta hacia el fondo de página.
   float v = smoothstep(1.25, 0.35, length(uv - vec2(0.5, 0.55)));
   col = mix(bg, col, v);
+
+  // Fundido a fondo puro en el borde inferior: sin costura con la
+  // siguiente sección.
+  col = mix(col, bg, smoothstep(0.05, 0.0, uv.y));
 
   outColor = vec4(col, 1.0);
 }

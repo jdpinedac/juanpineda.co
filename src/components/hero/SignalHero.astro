@@ -82,17 +82,9 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     display: flex;
     align-items: flex-end;
     overflow: hidden;
-    /* Pantalla de señal: el hero es oscuro en ambos temas, así que fija su
-       fondo y los tokens que usan sus descendientes. */
-    background: #0c1117;
-    /* re-resuelve el color heredado del body con los tokens de la isla */
+    /* El hero sigue el tema: el shader recibe la paleta por uniform. */
+    background: var(--bg);
     color: var(--fg);
-    --fg: #d9dde3;
-    --fg-strong: #f5f6f8;
-    --fg-muted: #98a0ab;
-    --accent: #7fd8c8;
-    --accent-dim: rgba(127, 216, 200, 0.35);
-    --line: #1e2832;
   }
   .fallback {
     position: absolute;
@@ -126,9 +118,10 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     inset: 0;
     background: linear-gradient(
       180deg,
-      rgba(12, 17, 23, 0.3) 0%,
-      rgba(12, 17, 23, 0.05) 45%,
-      rgba(12, 17, 23, 0.9) 94%
+      color-mix(in srgb, var(--bg) 30%, transparent) 0%,
+      color-mix(in srgb, var(--bg) 5%, transparent) 45%,
+      color-mix(in srgb, var(--bg) 90%, transparent) 94%,
+      var(--bg) 100%
     );
   }
   .content {
@@ -176,7 +169,7 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     display: inline-flex;
     align-items: center;
     /* Visible sobre el canvas: --line se pierde contra la cascada. */
-    border: 1px solid rgba(255, 255, 255, 0.22);
+    border: 1px solid color-mix(in srgb, var(--fg) 32%, transparent);
     border-radius: 6px;
     color: var(--fg-strong);
   }
@@ -185,6 +178,18 @@ const CTA_TALKS = { es: 'Próximas charlas', en: 'Upcoming talks' };
     color: var(--accent);
   }
   .cta a:hover {
-    background: rgba(127, 216, 200, 0.08);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+  }
+  /* En claro, la aurora y la onda del fallback bajan de intensidad. */
+  @media (prefers-color-scheme: light) {
+    :global(html:not([data-theme='dark'])) .fallback {
+      opacity: 0.45;
+    }
+  }
+  :global(html[data-theme='light']) .fallback {
+    opacity: 0.45;
+  }
+  :global(html[data-theme='dark']) .fallback {
+    opacity: 1;
   }
 </style>
