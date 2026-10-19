@@ -18,7 +18,8 @@ alias).
   emitido (`sha256` en base64) y actualízalo en `public/_headers`;
   `npm run build` corre `scripts/check-csp-hash.mjs`, que revisa todas las
   páginas del `dist/` contra esa cabecera y falla si falta un hash.
-- **Dependencias mínimas y pineadas.** Astro, MDX, sitemap y RSS. El hero
+- **Dependencias mínimas y pineadas.** Astro, MDX, sitemap y RSS; satori y
+  resvg solo en build (generan las OG, no viajan al visitante). El hero
   WebGL es un shader propio sin librerías.
 
 ## Desarrollo
@@ -56,8 +57,9 @@ npm run preview   # sirve dist/
   LinkedIn/GitHub y títulos por idioma. Cambios de contacto se hacen aquí.
 - `src/lib/blog.ts` — helpers del blog y la aserción de parejas de traducción.
 - `public/` — `_headers` (CSP y demás cabeceras de seguridad), `_redirects`
-  (301 de `/es/`), favicon y las imágenes OG (se regeneran con
-  `python3 scripts/og-images.py`).
+  (301 de `/es/`) y favicon. Las imágenes OG (`public/og/`, git-ignorado)
+  las genera `scripts/og-images.mjs` en cada build: páginas estructurales
+  desde su lista `PAGES`, posts del blog autodescubiertos del frontmatter.
 
 ### Idiomas
 
@@ -86,9 +88,10 @@ shader del hero recibe el tema por `u_light` y reacciona en vivo.
 - **Charla**: un YAML en `src/content/talks/`. `date` solo ordena la línea de
   tiempo; se muestra `event`.
 - **Post**: un MDX en `src/content/blog/es/` y su par en `blog/en/` con el
-  mismo `translationKey`. OG propia (opcional): añadir su entrada en `PAGES`
-  de `scripts/og-images.py`, correr el script y poner la ruta en el campo
-  `ogImage` del frontmatter. Un post solo se publica cuando su traducción también
+  mismo `translationKey`. La imagen OG sale sola en el build
+  (`/og/post-<translationKey>-<idioma>.png`, con título y descripción del
+  frontmatter); el campo `ogImage` queda como override opcional. Un post
+  solo se publica cuando su traducción también
   está publicada: los borradores (`draft: true`) van en pareja, porque la
   aserción de parejas los ignora y un publicado con traducción en borrador
   rompe el build.

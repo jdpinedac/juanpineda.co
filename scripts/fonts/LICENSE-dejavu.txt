@@ -1,0 +1,4 @@
+Fuentes DejaVu (DejaVuSerif.ttf, DejaVuSansMono.ttf), usadas solo en build
+para generar las imágenes OG. Licencia: Bitstream Vera Fonts Copyright +
+dominio público para los glifos añadidos por DejaVu — redistribución
+permitida. https://dejavu-fonts.github.io/License.html

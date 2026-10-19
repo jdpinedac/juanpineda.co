@@ -21,7 +21,7 @@ const t = useT(locale);
   title={`${post.data.title} · ${SITE.title[locale]}`}
   description={post.data.description}
   altPath={altPath}
-  ogImage={post.data.ogImage}
+  ogImage={post.data.ogImage ?? `/og/post-${post.data.translationKey}-${locale}.png`}
 >
   <article class="wrap post">
     <header>

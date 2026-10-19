@@ -13,3 +13,6 @@ npm-debug.log*
 .superpowers/
 # macOS
 .DS_Store
+
+# generado por scripts/og-images.mjs en el build
+public/og/
