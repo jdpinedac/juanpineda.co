@@ -12,8 +12,9 @@ alias).
   analítica, ni fuentes externas, ni CDN. Tipografías del sistema.
 - **CSP estricta** como cabecera real (`public/_headers`, la sirve
   Cloudflare Pages): `default-src 'none'`, `frame-ancestors 'none'`, scripts
-  solo propios más el hash del redirect de idioma. Si cambias ese script
-  inline en `src/layouts/Base.astro`, recalcula el hash del contenido exacto
+  solo propios más los hashes de los dos scripts inline de
+  `src/layouts/Base.astro` (el anti-parpadeo del tema y el redirect de
+  idioma). Si cambias cualquiera, recalcula el hash del contenido exacto
   emitido (`sha256` en base64) y actualízalo en `public/_headers`;
   `npm run build` corre `scripts/check-csp-hash.mjs`, que revisa todas las
   páginas del `dist/` contra esa cabecera y falla si falta un hash.
@@ -34,15 +35,22 @@ npm run preview   # sirve dist/
 ## Estructura
 
 - `src/pages/` — ES en la raíz (`/proyectos/`, `/charlas/`, `/sobre-mi/`,
-  `/blog/`), EN bajo `/en/`. Wrappers finos sobre las vistas de
-  `src/components/views/`.
+  `/blog/`, `/suscribete/`), EN bajo `/en/`. Wrappers finos sobre las vistas
+  de `src/components/views/`. Los feeds RSS (`/rss.xml` y `/en/rss.xml`) se
+  generan en `rss.xml.ts`; los enlaces visibles "RSS" llevan a la página
+  Suscríbete (el XML crudo asusta a los humanos, y la hoja XSLT que lo
+  embellecería está siendo retirada de Chrome).
 - `src/content/` — colecciones: `projects/*.yaml`, `talks/*.yaml` (campos
   bilingües `{es,en}`) y `blog/{es,en}/*.mdx` emparejados por
   `translationKey` (el build falla si falta una traducción).
 - `src/components/hero/` — hero "Red de Fibonacci": shader WebGL2 (esfera
-  de Fibonacci en 3D con paquetes y nodos que destellan; paleta clara u
-  oscura vía uniform `u_light`) con carga diferida, fallback CSS, pausa
-  fuera de viewport y respeto de `prefers-reduced-motion`.
+  de Fibonacci en 3D con tráfico bidireccional y nodos que destellan).
+  `signal-field.ts` proyecta los nodos una vez por frame y los pasa por el
+  uniform `u_nodes`; la paleta sigue el tema vía `u_light`. Carga diferida,
+  fallback estático (la misma constelación en SVG), pausa fuera de viewport
+  y respeto de `prefers-reduced-motion`. En `alt/` viven shaders alternos
+  (hoy el waterfall SDR): para activar uno, copiarlo sobre
+  `signal.frag.glsl` — usan los mismos uniforms.
 - `src/i18n/` — rutas localizadas, diccionario de interfaz y utilidades.
 - `src/config/site.ts` — datos del sitio: nombre público, correo de contacto,
   LinkedIn/GitHub y títulos por idioma. Cambios de contacto se hacen aquí.
@@ -56,9 +64,20 @@ npm run preview   # sirve dist/
 Español vive en la raíz e inglés bajo `/en/`. En la raíz, un script inline
 (el único con hash en la CSP) redirige a `/en/` cuando hay preferencia
 guardada (`localStorage.lang === "en"`, la escribe el botón ES/EN) o, en la
-primera visita, cuando el navegador está en inglés. `/es/` es un 301 a
+primera visita, cuando el navegador está en inglés y no tiene español en
+ninguna de sus lenguas (`navigator.languages`). `/es/` es un 301 a
 `/?hl=es` (en `public/_redirects`); ese parámetro le dice al script que el
 español fue pedido explícitamente y no debe rebotar a `/en/`.
+
+### Tema claro/oscuro
+
+Por defecto manda `prefers-color-scheme`; el botón de la nav fija
+`data-theme` en `<html>` y lo guarda en `localStorage.theme` (un script
+inline con hash lo aplica antes del primer pintado). Los tokens viven en
+`src/styles/tokens.css`: el bloque claro está duplicado a propósito —
+media query para la preferencia del sistema y `[data-theme="light"]` para
+la elección del botón — así que un cambio de color se hace en ambos. El
+shader del hero recibe el tema por `u_light` y reacciona en vivo.
 
 ### Añadir contenido
 
