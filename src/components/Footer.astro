@@ -1,5 +1,6 @@
 ---
 import { SITE } from '../config/site';
+import ObfuscatedEmail from './ObfuscatedEmail.astro';
 import { ROUTES, type Locale } from '../i18n/routes';
 import { useT } from '../i18n/utils';
 
@@ -16,7 +17,7 @@ const rss = ROUTES.subscribe[locale];
   <div class="wrap row">
     <span class="place">{SITE.location}</span>
     <nav aria-label="Social">
-      <a href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <ObfuscatedEmail />
       <a href={SITE.linkedin} rel="me noopener">LinkedIn</a>
       <a href={SITE.github} rel="me noopener">GitHub</a>
       <a href={rss}>{t('footer.rss')}</a>

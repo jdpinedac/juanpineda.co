@@ -1,0 +1,34 @@
+---
+import { SITE } from '../config/site';
+
+interface Props {
+  class?: string;
+  link?: boolean;
+}
+
+const { class: className, link = true } = Astro.props;
+
+// La dirección nunca aparece en el HTML: se sirve invertida y un script
+// la reconstruye en el cliente. Sin JS, el CSS bidi-override la muestra
+// en el orden correcto (aunque al copiarla quede invertida).
+const reversed = [...SITE.email].reverse().join('');
+const Tag = link ? 'a' : 'span';
+---
+
+<Tag class:list={[className]} data-obf={reversed}>{reversed}</Tag>
+
+<style>
+  [data-obf] {
+    unicode-bidi: bidi-override;
+    direction: rtl;
+  }
+</style>
+
+<script>
+  for (const el of document.querySelectorAll<HTMLElement>('[data-obf]')) {
+    const addr = [...(el.dataset.obf ?? '')].reverse().join('');
+    el.textContent = addr;
+    if (el instanceof HTMLAnchorElement) el.href = `mailto:${addr}`;
+    el.removeAttribute('data-obf');
+  }
+</script>

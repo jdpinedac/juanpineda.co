@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import { SITE } from '../../config/site';
+import ObfuscatedEmail from '../ObfuscatedEmail.astro';
 import { pick } from '../../i18n/utils';
 import type { Locale } from '../../i18n/routes';
 
@@ -99,7 +100,7 @@ const MC_INTRO = {
     <h1>{COPY.title[locale]}</h1>
     <p class="lede measure">
       {COPY.lede[locale]}
-      <a class="link-underline" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      <ObfuscatedEmail class="link-underline" />
     </p>
   </header>
 
@@ -110,7 +111,7 @@ const MC_INTRO = {
         FACTS[locale].map(([k, v]) => (
           <div class="fact">
             <dt>{k}</dt>
-            <dd>{v}</dd>
+            <dd>{v === SITE.email ? <ObfuscatedEmail link={false} /> : v}</dd>
           </div>
         ))
       }
